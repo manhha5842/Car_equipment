@@ -2,14 +2,13 @@ package com.car_equipment.Controler;
 
 
 import com.car_equipment.Config.JwtTokenProvider;
-import com.car_equipment.DTO.UserLoginDTO;
-import com.car_equipment.DTO.UserLoginWithGoogleDTO;
-import com.car_equipment.DTO.UserRegistrationDTO;
+import com.car_equipment.DTO.*;
 import com.car_equipment.Model.User;
 import com.car_equipment.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -44,13 +45,8 @@ public class UserController {
         newUser.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
         newUser.setPhoneNumber(registrationDTO.getPhoneNumber());
         newUser.setRole("USER");
-        System.out.println("đúng" + newUser);
         userService.saveUser(newUser);
-
-        String token = jwtTokenProvider.createToken(newUser.getEmail(), newUser.getRole());
-
-        // Trả về JWT token cho người dùng
-        return ResponseEntity.ok().body("Bearer " + token);
+        return ResponseEntity.ok().body(getRespone(userService.findByEmail(newUser.getEmail()).get()));
     }
 
     @PostMapping("/login")
@@ -63,45 +59,57 @@ public class UserController {
 
         // Kiểm tra mật khẩu có khớp không
         User foundUser = user.get();
-        System.out.println("foundUser: " + foundUser.getPassword());
-        System.out.println("input: " + passwordEncoder.encode(loginDTO.getPassword()));
         if (!passwordEncoder.matches(loginDTO.getPassword(), foundUser.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
         }
 
-        // Tại đây, thông tin đăng nhập là hợp lệ và đúng, tạo JWT token
-        String token = jwtTokenProvider.createToken(foundUser.getEmail(), foundUser.getRole());
-
-        // Trả về JWT token cho người dùng
-        return ResponseEntity.ok().body("Bearer " + token);
+        return ResponseEntity.ok().body(getRespone(foundUser));
     }
 
     @PostMapping("/loginWithGoogle")
     public ResponseEntity<?> loginWithGoogle(@RequestBody UserLoginWithGoogleDTO loginDTO) {
         // Kiểm tra user có tồn tại trong hệ thống không dựa vào email
         Optional<User> user = userService.findByEmail(loginDTO.getEmail());
-        if (!user.isPresent()) {
-            String token = jwtTokenProvider.createToken(user.get().getEmail(), user.get().getRole());
-            // Trả về JWT token cho người dùng
-            return ResponseEntity.ok().body("Bearer " + token);
-        }else {
+        if (user.isPresent()) {
+            return ResponseEntity.ok().body(getRespone(user.get()));
+        } else {
             User newUser = new User();
             newUser.setFullName(loginDTO.getFullName());
             newUser.setEmail(loginDTO.getEmail());
             newUser.setRole("USER");
-            System.out.println("đúng" + newUser);
             userService.saveUser(newUser);
-            String token = jwtTokenProvider.createToken(newUser.getEmail(), newUser.getRole());
 
-            // Trả về JWT token cho người dùng
-            return ResponseEntity.ok().body("Bearer " + token);
+            User foundUser = userService.findByEmail(loginDTO.getEmail()).get();
+            return ResponseEntity.ok().body(getRespone(foundUser));
         }
 
     }
 
     @PostMapping("/updatePassword")
-    public ResponseEntity<?> updatePassword() {
-        return null;
+    public ResponseEntity<?> updatePassword(@AuthenticationPrincipal User userDetails, @RequestBody UpdatePasswordDTO updatePasswordDTO) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
+        }
+
+        // Kiểm tra mật khẩu hiện tại
+        User user = userService.findByEmail(userDetails.getEmail()).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        // So sánh mật khẩu hiện tại với mật khẩu trong request
+        if (!passwordEncoder.matches(updatePasswordDTO.getCurrentPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Current password is incorrect");
+        }
+        // Cập nhật mật khẩu và lưu vào database
+        System.out.println("new password " + updatePasswordDTO.getNewPassword());
+        String newPassword = passwordEncoder.encode(updatePasswordDTO.getNewPassword());
+        System.out.println(newPassword);
+        user.setPassword(newPassword);
+        userService.saveUser(user);
+
+        return ResponseEntity.ok().body("Password updated successfully");
     }
 
     @PostMapping("/resetPassword")
@@ -109,4 +117,13 @@ public class UserController {
         return null;
     }
 
+    private Map<String, Object> getRespone(User user) {
+        String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole());
+
+        UserInfoDTO userInfoDTO = new UserInfoDTO(user.getId(), user.getEmail(), user.getFullName(), user.getAddresses(), user.getPhoneNumber(), user.getAvatar(), user.getRole());
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", userInfoDTO);
+        response.put("token", token);
+        return response;
+    }
 }

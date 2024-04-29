@@ -25,7 +25,6 @@ public class UserService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
 
     public User saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // mã hóa mật khẩu
         return userRepository.save(user);
     }
 

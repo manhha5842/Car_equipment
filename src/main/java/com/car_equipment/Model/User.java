@@ -11,7 +11,7 @@ import java.util.Set;
 @Entity
 @Table(name = "user")
 @Data
-public class User implements Serializable {
+public class User implements Serializable    {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(

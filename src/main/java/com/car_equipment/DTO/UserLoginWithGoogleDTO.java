@@ -7,5 +7,6 @@ public class UserLoginWithGoogleDTO {
     private String id;
     private String email;
     private String fullName;
+    private String avatar;
 
 }

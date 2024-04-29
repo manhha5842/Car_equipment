@@ -1,4 +1,5 @@
 package com.car_equipment.Config;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -26,7 +27,10 @@ public class JwtTokenFilter extends GenericFilterBean {
             Authentication auth = jwtTokenProvider.getAuthentication(token);
             if (auth != null) {
                 SecurityContextHolder.getContext().setAuthentication(auth);
+                logger.info("Token hợp lệ: " + token);
             }
+        } else {
+            logger.info("Token không hợp lệ: " + token);
         }
         filterChain.doFilter(req, res);
     }

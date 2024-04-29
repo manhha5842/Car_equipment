@@ -16,18 +16,16 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
-
-    // Chú ý thay thế "yourSecretKey" bằng secret key bảo mật thực sự và lưu trữ nó một cách an toàn
     @Value("${jwt.secret-key}")
     private String secretKey;
 
     // Thời gian hết hạn token
-    @Value("${security.jwt.token.expire-length:3600000}") // 1h in milliseconds by default
+    @Value("${security.jwt.token.expire-length:3600000}")
     private long validityInMilliseconds;
 
     // Tạo JWT token
-    public String createToken(String username, String role) {
-        Claims claims = Jwts.claims().setSubject(username);
+    public String createToken(String email, String role) {
+        Claims claims = Jwts.claims().setSubject(email);
         claims.put("auth", role);
 
         Date now = new Date();
@@ -47,15 +45,17 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            // Tùy vào nhu cầu, bạn có thể handle các exception cụ thể như ExpiredJwtException, UnsupportedJwtException, ...
-            // Hiện tại chúng tôi sẽ catch mọi JwtException và IllegalArgumentException và trả về false
-            throw new InvalidJwtAuthenticationException("Expired or invalid JWT token");
+            return false;
+//            throw new InvalidJwtAuthenticationException("Expired or invalid JWT token");
         }
     }
 
     // Lấy thông tin người dùng từ JWT token
-    public String getUsername(String token) {
+    public String getEmail(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+    public String getRole(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("auth").toString();
     }
 
     private static class InvalidJwtAuthenticationException extends RuntimeException {
@@ -72,15 +72,16 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        // Giả sử "role" là một String ngăn cách bởi dấu phẩy
-        String roleStr = getUsername(token); // Giả sử bạn lưu trữ roles như là claim "auth" hoặc tương tự
+        String roleStr = getRole(token);
         List<SimpleGrantedAuthority> authorities =
                 Arrays.stream(roleStr.split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        User principal = new User();
-        principal.setEmail(getUsername(token));
+        User principal = new User(); // Tạo một đối tượng User mới mỗi lần gọi
+        principal.setEmail(getEmail(token)); // Thiết lập thông tin email
+        System.out.println(principal.toString());
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
+
 }
