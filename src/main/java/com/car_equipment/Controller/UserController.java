@@ -1,4 +1,4 @@
-package com.car_equipment.Controler;
+package com.car_equipment.Controller;
 
 
 import com.car_equipment.Config.JwtTokenProvider;
@@ -60,6 +60,7 @@ public class UserController {
         // Kiểm tra mật khẩu có khớp không
         User foundUser = user.get();
         if (!passwordEncoder.matches(loginDTO.getPassword(), foundUser.getPassword())) {
+            System.out.println(passwordEncoder.encode(loginDTO.getPassword()));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
         }
 
@@ -74,13 +75,11 @@ public class UserController {
             return ResponseEntity.ok().body(getRespone(user.get()));
         } else {
             User newUser = new User();
+            newUser.setId(loginDTO.getId());
             newUser.setFullName(loginDTO.getFullName());
             newUser.setEmail(loginDTO.getEmail());
             newUser.setRole("USER");
-            userService.saveUser(newUser);
-
-            User foundUser = userService.findByEmail(loginDTO.getEmail()).get();
-            return ResponseEntity.ok().body(getRespone(foundUser));
+            return ResponseEntity.ok().body(getRespone(userService.saveUser(newUser)));
         }
 
     }

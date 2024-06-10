@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.sql.Time;
+import java.util.List;
 
 @Entity
 @Table(name = "review")
@@ -19,17 +20,24 @@ public class Review implements Serializable {
     )
     @Column(name = "id", updatable = false, nullable = false)
     private String id;
+
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
+
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
     @Column(name = "rate")
     private int rate;
+
     @Column(name = "message")
     private String message;
+
     @Column(name = "created_at")
     private Time createdAt;
 
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reply> replies;
 }

@@ -55,8 +55,11 @@ public class JwtTokenProvider {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
     public String getRole(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("auth").toString();
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        Object role = claims.get("auth");
+        return role != null ? role.toString() : null;
     }
+
 
     private static class InvalidJwtAuthenticationException extends RuntimeException {
         public InvalidJwtAuthenticationException(String explanation) {
@@ -73,15 +76,19 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         String roleStr = getRole(token);
-        List<SimpleGrantedAuthority> authorities =
-                Arrays.stream(roleStr.split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+        if(roleStr != null){
+            List<SimpleGrantedAuthority> authorities =
+                    Arrays.stream(roleStr.split(","))
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
 
-        User principal = new User(); // Tạo một đối tượng User mới mỗi lần gọi
-        principal.setEmail(getEmail(token)); // Thiết lập thông tin email
-        System.out.println(principal.toString());
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+            User principal = new User(); // Tạo một đối tượng User mới mỗi lần gọi
+            principal.setEmail(getEmail(token)); // Thiết lập thông tin email
+            System.out.println(principal.toString());
+            return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        }
+        return null;
+
     }
 
 }

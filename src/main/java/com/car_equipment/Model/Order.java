@@ -34,7 +34,7 @@ public class Order implements Serializable {
     @Column(name = "is_paid")
     private boolean isPaid;
     @Column(name = "status")
-    private String status;
+    private OrderStatus status;
     @Column(name = "review")
     private String review;
     @Column(name = "note")

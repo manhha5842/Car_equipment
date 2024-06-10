@@ -1,12 +1,10 @@
 package com.car_equipment.Model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,8 +26,6 @@ public class Category implements Serializable {
     @Column(name = "image_category")
     private String image_category;
 
-    @ManyToMany(mappedBy = "categories")
-    @JsonBackReference
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
     private Set<Product> products;
-
 }
