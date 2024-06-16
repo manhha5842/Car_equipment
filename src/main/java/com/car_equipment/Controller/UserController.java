@@ -53,7 +53,7 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody UserLoginDTO loginDTO) {
         // Kiểm tra user có tồn tại trong hệ thống không dựa vào email
         Optional<User> user = userService.findByEmail(loginDTO.getEmail());
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
         }
 
@@ -72,7 +72,10 @@ public class UserController {
         // Kiểm tra user có tồn tại trong hệ thống không dựa vào email
         Optional<User> user = userService.findByEmail(loginDTO.getEmail());
         if (user.isPresent()) {
-            return ResponseEntity.ok().body(getRespone(user.get()));
+            if (!loginDTO.getAvatar().isEmpty()) user.get().setAvatar(loginDTO.getAvatar());
+            if (!loginDTO.getFullName().isEmpty()) user.get().setFullName(loginDTO.getFullName());
+            if (!loginDTO.getPhoneNumber().isEmpty()) user.get().setPhoneNumber(loginDTO.getPhoneNumber());
+            return ResponseEntity.ok().body(getRespone(userService.saveUser(user.get())));
         } else {
             User newUser = new User();
             newUser.setId(loginDTO.getId());
