@@ -28,12 +28,12 @@ jobs:
         run: chmod 600 ~/.ssh/id_rsa
 
       - name: Copy files to EC2
-        run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./project ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment
+        run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r . ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment
 
       - name: SSH into EC2 and deploy
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /home/ec2-user/Car_equipment/project
+            cd /home/ec2-user/Car_equipment
             docker-compose down
             docker-compose build
             docker-compose up -d
