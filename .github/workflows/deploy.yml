@@ -39,10 +39,11 @@ jobs:
       - name: Create remote directory
         run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'mkdir -p /home/ec2-user/Car_equipment'
 
-      - name: Copy JAR and Docker Compose file to EC2
+      - name: Copy JAR, Docker Compose file, and Dockerfile to EC2
         run: |
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa target/*.jar ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment/app.jar
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment/
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa Dockerfile ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment/
 
       - name: SSH into EC2 and deploy
         run: |
