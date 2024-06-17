@@ -28,7 +28,7 @@ jobs:
         run: chmod 600 ~/.ssh/id_rsa
 
       - name: Create tarball of the current directory
-        run: tar --warning=no-file-changed -czf project.tar.gz .
+        run: tar --ignore-failed-read -czf project.tar.gz .
 
       - name: Copy tarball to EC2
         run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa project.tar.gz ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment
