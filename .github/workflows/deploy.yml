@@ -36,6 +36,9 @@ jobs:
       - name: Set permissions for SSH key
         run: chmod 600 ~/.ssh/id_rsa
 
+      - name: Create remote directory
+        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'mkdir -p /home/ec2-user/Car_equipment'
+
       - name: Copy JAR file to EC2
         run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa target/*.jar ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment/app.jar
 
