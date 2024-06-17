@@ -41,7 +41,7 @@ jobs:
 
       - name: Copy JAR, Docker Compose file, and Dockerfile to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa target/*.jar ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment/app.jar
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r target ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment/
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment/
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa Dockerfile ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment/
 
