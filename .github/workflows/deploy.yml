@@ -16,7 +16,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
-          distribution: 'openjdk' # hoặc 'zulu', 'adopt', 'temurin', tùy thuộc vào bạn muốn sử dụng JDK nào
+          distribution: 'temurin' # hoặc 'zulu', 'adopt', 'openjdk', tùy thuộc vào bạn muốn sử dụng JDK nào
           java-version: '17'
 
       - name: Build with Maven
