@@ -1,0 +1,32 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Copy files to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY_PATH }} -r . ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/Car_equipment
+
+      - name: SSH into EC2 and deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY_PATH }} ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+            cd /home/ec2-user/Car_equipment
+            docker-compose down
+            docker-compose build
+            docker-compose up -d
+          EOF
