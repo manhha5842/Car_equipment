@@ -16,7 +16,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
-          distribution: 'temurin' # hoặc 'zulu', 'adopt', 'openjdk', tùy thuộc vào bạn muốn sử dụng JDK nào
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Build with Maven
@@ -45,6 +45,7 @@ jobs:
       - name: SSH into EC2 and deploy
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+            sudo yum install -y libxcrypt-compat
             cd /home/ec2-user/Car_equipment
             docker-compose down
             docker-compose build
