@@ -81,6 +81,8 @@ public class UserController {
             newUser.setId(loginDTO.getId());
             newUser.setFullName(loginDTO.getFullName());
             newUser.setEmail(loginDTO.getEmail());
+            user.get().setPhoneNumber(loginDTO.getPhoneNumber());
+            user.get().setAvatar(loginDTO.getAvatar());
             newUser.setRole("USER");
             return ResponseEntity.ok().body(getRespone(userService.saveUser(newUser)));
         }
