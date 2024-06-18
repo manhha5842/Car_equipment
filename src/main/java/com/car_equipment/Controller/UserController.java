@@ -25,10 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -182,7 +179,21 @@ public class UserController {
     private Map<String, Object> getRespone(User user) {
         String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole());
 
-        UserInfoDTO userInfoDTO = new UserInfoDTO(user.getId(), user.getEmail(), user.getFullName(), user.getAddresses().stream().map(AddressDTO::transferToDTO).collect(Collectors.toSet()), user.getPhoneNumber(), user.getAvatar(), user.getRole());
+        // Kiểm tra nếu addresses là null
+        Set<AddressDTO> addressDTOs = user.getAddresses() != null ?
+                user.getAddresses().stream().map(AddressDTO::transferToDTO).collect(Collectors.toSet()) :
+                Collections.emptySet();
+
+        UserInfoDTO userInfoDTO = new UserInfoDTO(
+                user.getId(),
+                user.getEmail(),
+                user.getFullName(),
+                addressDTOs,
+                user.getPhoneNumber(),
+                user.getAvatar(),
+                user.getRole()
+        );
+
         Map<String, Object> response = new HashMap<>();
         response.put("user", userInfoDTO);
         response.put("token", token);
