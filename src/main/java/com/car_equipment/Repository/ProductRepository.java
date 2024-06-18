@@ -20,9 +20,16 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("SELECT p FROM Product p JOIN p.orders o GROUP BY p.id ORDER BY SUM(o.totalAmount) DESC")
     Page<Product> findBestSellingProducts(Pageable pageable);
+
     @Query("SELECT p FROM Product p JOIN p.categories c WHERE c.id = :categoryId")
     List<Product> findProductsByCategoryId(String categoryId);
 
     @Query("SELECT p FROM Product p JOIN p.categories c WHERE c.id = :categoryId")
     Page<Product> findProductsByCategoryId(String categoryId, Pageable pageable);
+
+    @Query("SELECT p FROM Product p ORDER BY p.viewCount DESC")
+    List<Product> findMostViewedProducts();
+
+    @Query("SELECT p FROM Product p ORDER BY p.viewCount DESC")
+    Page<Product> findMostViewedProducts(Pageable pageable);
 }

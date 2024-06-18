@@ -47,14 +47,14 @@ public class ProductController {
     // Lấy sản phẩm theo category
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable String categoryId) {
-        List<ProductDTO> products = productService.getProductsByCategory(categoryId);
+        List<ProductDTO> products = productService.getProductsByCategoryId(categoryId);
         return ResponseEntity.ok(products);
     }
 
     // Lấy sản phẩm theo category và trang
     @GetMapping("/category/{categoryId}/page")
     public ResponseEntity<Page<ProductDTO>> getProductsByCategory(@PathVariable String categoryId, @RequestParam int page, @RequestParam int size) {
-        Page<ProductDTO> productPage = productService.getProductsByCategory(categoryId, page, size);
+        Page<ProductDTO> productPage = productService.getProductsByCategoryId(categoryId, page, size);
         return ResponseEntity.ok(productPage);
     }
 

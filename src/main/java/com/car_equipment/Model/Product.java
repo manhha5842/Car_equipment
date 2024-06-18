@@ -46,7 +46,8 @@ public class Product implements Serializable {
 
     @Column(name = "quantity_available")
     private int quantityAvailable;
-
+    @Column(name = "view_count")
+    private int viewCount;
     @ManyToMany
     @JoinTable(
             name = "category_product",

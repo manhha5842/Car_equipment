@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,13 +35,13 @@ public class ProductService {
     }
 
     // Lấy danh sách sản phẩm theo category
-    public List<ProductDTO> getProductsByCategory(String categoryId) {
+    public List<ProductDTO> getProductsByCategoryId(String categoryId) {
         List<Product> products = productRepository.findProductsByCategoryId(categoryId);
         return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
     }
 
     // Lấy danh sách sản phẩm theo category và trang
-    public Page<ProductDTO> getProductsByCategory(String categoryId, int page, int size) {
+    public Page<ProductDTO> getProductsByCategoryId(String categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = productRepository.findProductsByCategoryId(categoryId, pageable);
         return productPage.map(ProductDTO::transferToDTO);
@@ -58,10 +59,28 @@ public class ProductService {
         Page<Product> productPage = productRepository.findBestSellingProducts(pageable);
         return productPage.map(ProductDTO::transferToDTO);
     }
+    // Lấy danh sách sản phẩm được xem nhiều nhất
+    public List<ProductDTO> getMostViewedProducts() {
+        List<Product> products = productRepository.findMostViewedProducts();
+        return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
+    }
 
+    // Lấy danh sách sản phẩm được xem nhiều nhất theo trang
+    public Page<ProductDTO> getMostViewedProductsByPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findMostViewedProducts(pageable);
+        return productPage.map(ProductDTO::transferToDTO);
+    }
     // Xem chi tiết Product
     public ProductDTO getProductById(String id) {
-        return productRepository.findById(id).map(ProductDTO::transferToDTO).orElse(null);
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            product.setViewCount(product.getViewCount() + 1);
+            productRepository.save(product);
+            return ProductDTO.transferToDTO(product);
+        }
+        return null;
     }
 
     // Thêm Product
@@ -76,7 +95,7 @@ public class ProductService {
         product.setQuantityInit(productDTO.getQuantityInit());
         product.setQuantityAvailable(productDTO.getQuantityAvailable());
         product.setCategories(productDTO.getCategories().stream().map(CategoryDTO::transferToEntity).collect(Collectors.toSet()));
-
+        product.setViewCount(0);
         Product savedProduct = productRepository.save(product);
         return ProductDTO.transferToDTO(savedProduct);
     }

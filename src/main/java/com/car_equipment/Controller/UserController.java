@@ -4,7 +4,15 @@ package com.car_equipment.Controller;
 import com.car_equipment.Config.JwtTokenProvider;
 import com.car_equipment.DTO.*;
 import com.car_equipment.Model.User;
+import com.car_equipment.Service.AddressService;
 import com.car_equipment.Service.UserService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.imagekit.sdk.ImageKit;
+import io.imagekit.sdk.config.Configuration;
+import io.imagekit.sdk.exceptions.*;
+import io.imagekit.sdk.models.FileCreateRequest;
+import io.imagekit.sdk.models.results.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +37,8 @@ public class UserController {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private AddressService addressService;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
@@ -49,20 +61,50 @@ public class UserController {
     }
 
     @PostMapping("/updateInfo")
-    public ResponseEntity<?> updateInfo(@RequestParam("id") String id,
-                                        @RequestParam("email") String email,
-                                        @RequestParam("fullName") String fullName,
-                                        @RequestParam("addresses") Set<AddressDTO> addresses,
-                                        @RequestParam("phoneNumber") String phoneNumber,
-                                        @RequestParam("avatar") String avatar,
-                                        @RequestParam("proposedSolution") String proposedSolution, @RequestParam(value = "image") MultipartFile image) {
-        User user = userService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        user.setEmail(email);
-        user.setFullName(fullName);
-        user.setPhoneNumber(phoneNumber);
-        user.setAvatar(avatar);
-        return ResponseEntity.ok().body(getRespone(userService.saveUser(user)));
+    public ResponseEntity<?> updateInfo(
+            @RequestParam("id") String id,
+            @RequestParam("email") String email,
+            @RequestParam("fullName") String fullName,
+            @RequestParam("addresses") String addressesJson,
+            @RequestParam("phoneNumber") String phoneNumber,
+            @RequestParam("image") MultipartFile image) throws IOException, ForbiddenException, TooManyRequestsException, InternalServerException, UnauthorizedException, BadRequestException, UnknownException {
+
+        try {
+            // Chuyển đổi JSON của addresses thành Set<AddressDTO>
+            ObjectMapper objectMapper = new ObjectMapper();
+            Set<AddressDTO> addresses = objectMapper.readValue(addressesJson, new TypeReference<Set<AddressDTO>>() {
+            });
+
+            User user = userService.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            user.setEmail(email);
+            user.setFullName(fullName);
+            user.setPhoneNumber(phoneNumber);
+
+            // Xử lý ảnh với ImageKit
+            ImageKit imageKit = ImageKit.getInstance();
+            Configuration config = new Configuration("public_YiJMjxdBcy00loCsmDp848aKnBM=", "private_y16gn+wwe5b3peEkVWUqy44bfT8=", "https://ik.imagekit.io/manhha5842/newsAPI");
+            imageKit.setConfig(config);
+            byte[] bytes = image.getBytes();
+            FileCreateRequest fileCreateRequestRequest = new FileCreateRequest(bytes,
+                    id.replace(" ", "_") + "" + new Timestamp(System.currentTimeMillis()).from(Instant.now())
+                            + ".jpg");
+            fileCreateRequestRequest.setUseUniqueFileName(false);
+            Result result = ImageKit.getInstance().upload(fileCreateRequestRequest);
+            String imagePath = result.getResponseMetaData().getMap().get("url").toString();
+            user.setAvatar(imagePath);
+
+            // Xử lý địa chỉ
+            for (AddressDTO addressDTO : addresses) {
+                addressDTO.setUserId(id);
+                addressService.addAddress(addressDTO);
+            }
+
+            return ResponseEntity.ok().body(getRespone(userService.saveUser(user)));
+        }catch (IllegalStateException e) {
+            System.out.println(e);
+            return ResponseEntity.badRequest().body(e);
+        }
     }
 
     @PostMapping("/login")
