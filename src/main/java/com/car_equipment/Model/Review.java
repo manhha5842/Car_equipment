@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -35,9 +36,16 @@ public class Review implements Serializable {
     @Column(name = "message")
     private String message;
 
-    @Column(name = "created_at")
-    private Time createdAt;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+
+    @Column(name = "updated_at")
+    private Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
+    }
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replies;
 }

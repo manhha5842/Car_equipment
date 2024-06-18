@@ -15,7 +15,7 @@ public class ProductDTO {
     private int price;
     private double rate;
     private String image;
-    private Time date;
+    private String date;
     private int quantityInit;
     private int quantityAvailable;
     private Set<CategoryDTO> categories;
@@ -28,7 +28,7 @@ public class ProductDTO {
         dto.setPrice(product.getPrice());
         dto.setRate(product.getRate());
         dto.setImage(product.getImage());
-        dto.setDate(product.getDate());
+        dto.setDate(product.getDate().toString());
         dto.setQuantityInit(product.getQuantityInit());
         dto.setQuantityAvailable(product.getQuantityAvailable());
         dto.setCategories(product.getCategories().stream().map(CategoryDTO::transferToDTO).collect(Collectors.toSet()));

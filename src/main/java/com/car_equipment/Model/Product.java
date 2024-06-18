@@ -5,7 +5,9 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
@@ -37,7 +39,7 @@ public class Product implements Serializable {
     private String image;
 
     @Column(name = "date")
-    private Time date;
+    private Date date;
 
     @Column(name = "quantity_init")
     private int quantityInit;

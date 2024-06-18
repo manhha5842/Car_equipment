@@ -11,7 +11,7 @@ public class ReplyDTO {
     private String reviewId;
     private String userId;
     private String message;
-    private Time createdAt;
+    private String createdAt;
 
     public static ReplyDTO transferToDTO(Reply reply) {
         ReplyDTO dto = new ReplyDTO();
@@ -19,7 +19,7 @@ public class ReplyDTO {
         dto.setReviewId(reply.getReview().getId());
         dto.setUserId(reply.getUser().getId());
         dto.setMessage(reply.getMessage());
-        dto.setCreatedAt(reply.getCreatedAt());
+        dto.setCreatedAt(reply.getCreatedAt().toString());
         return dto;
     }
 }

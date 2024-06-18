@@ -43,7 +43,6 @@ public class ReviewService {
         Review review = new Review();
         review.setRate(reviewDTO.getRate());
         review.setMessage(reviewDTO.getMessage());
-        review.setCreatedAt(reviewDTO.getCreatedAt());
 
         Optional<Product> productOptional = productRepository.findById(reviewDTO.getProductId());
         productOptional.ifPresent(review::setProduct);
@@ -62,7 +61,6 @@ public class ReviewService {
             Review review = reviewOptional.get();
             review.setRate(reviewDTO.getRate());
             review.setMessage(reviewDTO.getMessage());
-            review.setCreatedAt(reviewDTO.getCreatedAt());
 
             Optional<Product> productOptional = productRepository.findById(reviewDTO.getProductId());
             productOptional.ifPresent(review::setProduct);

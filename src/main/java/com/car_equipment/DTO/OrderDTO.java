@@ -22,6 +22,7 @@ public class OrderDTO {
     private String review;
     private String note;
     private Set<ProductDTO> products;
+    private String createdAt;
 
     public static OrderDTO transferToDTO(Order order) {
         OrderDTO orderDTO = new OrderDTO();
@@ -36,6 +37,7 @@ public class OrderDTO {
         orderDTO.setReview(order.getReview());
         orderDTO.setNote(order.getNote());
         orderDTO.setProducts(order.getProducts().stream().map(ProductDTO::transferToDTO).collect(Collectors.toSet()));
+        orderDTO.setCreatedAt(order.getCreatedAt().toString());
         return orderDTO;
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,7 @@ public class ProductService {
         product.setPrice(productDTO.getPrice());
         product.setRate(productDTO.getRate());
         product.setImage(productDTO.getImage());
-        product.setDate(productDTO.getDate());
+        product.setDate(Date.valueOf(productDTO.getDate()) );
         product.setQuantityInit(productDTO.getQuantityInit());
         product.setQuantityAvailable(productDTO.getQuantityAvailable());
         product.setCategories(productDTO.getCategories().stream().map(CategoryDTO::transferToEntity).collect(Collectors.toSet()));
@@ -88,7 +89,7 @@ public class ProductService {
             product.setPrice(productDTO.getPrice());
             product.setRate(productDTO.getRate());
             product.setImage(productDTO.getImage());
-            product.setDate(productDTO.getDate());
+            product.setDate(Date.valueOf(productDTO.getDate()));
             product.setQuantityInit(productDTO.getQuantityInit());
             product.setQuantityAvailable(productDTO.getQuantityAvailable());
             product.setCategories(productDTO.getCategories().stream().map(CategoryDTO::transferToEntity).collect(Collectors.toSet()));

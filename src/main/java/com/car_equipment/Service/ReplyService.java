@@ -42,7 +42,6 @@ public class ReplyService {
     public ReplyDTO addReply(ReplyDTO replyDTO) {
         Reply reply = new Reply();
         reply.setMessage(replyDTO.getMessage());
-        reply.setCreatedAt(replyDTO.getCreatedAt());
 
         Optional<Review> reviewOptional = reviewRepository.findById(replyDTO.getReviewId());
         reviewOptional.ifPresent(reply::setReview);
@@ -60,7 +59,6 @@ public class ReplyService {
         if (replyOptional.isPresent()) {
             Reply reply = replyOptional.get();
             reply.setMessage(replyDTO.getMessage());
-            reply.setCreatedAt(replyDTO.getCreatedAt());
 
             Optional<Review> reviewOptional = reviewRepository.findById(replyDTO.getReviewId());
             reviewOptional.ifPresent(reply::setReview);
