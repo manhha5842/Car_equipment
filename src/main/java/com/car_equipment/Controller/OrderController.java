@@ -6,6 +6,7 @@ import com.car_equipment.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,9 +28,39 @@ public class OrderController {
 
     // Lấy tất cả các order theo trang (pagination)
     @GetMapping("/page")
-    public ResponseEntity<Page<OrderDTO>> getAllOrders(Pageable pageable) {
+    public ResponseEntity<Page<OrderDTO>> getAllOrders(@RequestParam int page, @RequestParam int size) {
+        Pageable pageable = PageRequest.of(page, size);
         Page<OrderDTO> orders = orderService.getAllOrders(pageable);
-        
+        return ResponseEntity.ok(orders);
+    }
+
+    // Lấy order theo user
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<OrderDTO>> getOrdersByUser(@PathVariable String userId) {
+        List<OrderDTO> orders = orderService.getOrdersByUser(userId);
+        return ResponseEntity.ok(orders);
+    }
+
+    // Lấy order theo user và trang
+    @GetMapping("/user/{userId}/page")
+    public ResponseEntity<Page<OrderDTO>> getOrdersByUser(@PathVariable String userId, @RequestParam int page, @RequestParam int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<OrderDTO> orders = orderService.getOrdersByUser(userId, pageable);
+        return ResponseEntity.ok(orders);
+    }
+
+    // Lấy order theo status
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<OrderDTO>> getOrdersByStatus(@PathVariable OrderStatus status) {
+        List<OrderDTO> orders = orderService.getOrdersByStatus(status);
+        return ResponseEntity.ok(orders);
+    }
+
+    // Lấy order theo status và trang
+    @GetMapping("/status/{status}/page")
+    public ResponseEntity<Page<OrderDTO>> getOrdersByStatus(@PathVariable OrderStatus status, @RequestParam int page, @RequestParam int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<OrderDTO> orders = orderService.getOrdersByStatus(status, pageable);
         return ResponseEntity.ok(orders);
     }
 

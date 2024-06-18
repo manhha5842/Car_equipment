@@ -1,15 +1,16 @@
 package com.car_equipment.Service;
 
 import com.car_equipment.DTO.OrderDTO;
+import com.car_equipment.Model.Address;
 import com.car_equipment.Model.Order;
 import com.car_equipment.Model.OrderStatus;
 import com.car_equipment.Model.User;
-import com.car_equipment.Model.Address;
+import com.car_equipment.Repository.AddressRepository;
 import com.car_equipment.Repository.OrderRepository;
 import com.car_equipment.Repository.UserRepository;
-import com.car_equipment.Repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +23,8 @@ public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private AddressRepository addressRepository;
 
@@ -38,6 +37,30 @@ public class OrderService {
     // Lấy tất cả các order theo trang (pagination)
     public Page<OrderDTO> getAllOrders(Pageable pageable) {
         Page<Order> orders = orderRepository.findAll(pageable);
+        return orders.map(OrderDTO::transferToDTO);
+    }
+
+    // Lấy order theo user
+    public List<OrderDTO> getOrdersByUser(String userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return orders.stream().map(OrderDTO::transferToDTO).collect(Collectors.toList());
+    }
+
+    // Lấy order theo user và trang
+    public Page<OrderDTO> getOrdersByUser(String userId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findByUserId(userId, pageable);
+        return orders.map(OrderDTO::transferToDTO);
+    }
+
+    // Lấy order theo status
+    public List<OrderDTO> getOrdersByStatus(OrderStatus status) {
+        List<Order> orders = orderRepository.findByStatus(status);
+        return orders.stream().map(OrderDTO::transferToDTO).collect(Collectors.toList());
+    }
+
+    // Lấy order theo status và trang
+    public Page<OrderDTO> getOrdersByStatus(OrderStatus status, Pageable pageable) {
+        Page<Order> orders = orderRepository.findByStatus(status, pageable);
         return orders.map(OrderDTO::transferToDTO);
     }
 

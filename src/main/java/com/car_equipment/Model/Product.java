@@ -11,7 +11,7 @@ import java.util.Set;
 @Entity
 @Table(name = "product")
 @Data
-public class Product  implements Serializable {
+public class Product implements Serializable {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -58,4 +58,7 @@ public class Product  implements Serializable {
 
     @ManyToMany(mappedBy = "products")
     private Set<Cart> carts;
+
+    @ManyToMany(mappedBy = "products")
+    private Set<Order> orders;
 }

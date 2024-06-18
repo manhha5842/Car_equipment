@@ -16,4 +16,11 @@ public class CategoryDTO {
         dto.setImageCategory(category.getImage_category());
         return dto;
     }
+    public static Category transferToEntity(CategoryDTO categoryDTO) {
+        Category category = new Category();
+        category.setId(categoryDTO.getId());
+        category.setName(categoryDTO.getName());
+        category.setImage_category(categoryDTO.getImageCategory());
+        return category;
+    }
 }

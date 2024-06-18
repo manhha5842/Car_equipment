@@ -23,6 +23,41 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    // Lấy danh sách Product theo trang
+        @GetMapping("/page")
+    public ResponseEntity<Page<ProductDTO>> getProductsByPage(@RequestParam int page, @RequestParam int size) {
+        Page<ProductDTO> productPage = productService.getProductsByPage(page, size);
+        return ResponseEntity.ok(productPage);
+    }
+
+    // Lấy danh sách sản phẩm bán chạy
+    @GetMapping("/best-selling")
+    public ResponseEntity<List<ProductDTO>> getBestSellingProducts() {
+        List<ProductDTO> products = productService.getBestSellingProducts();
+        return ResponseEntity.ok(products);
+    }
+
+    // Lấy danh sách sản phẩm bán chạy theo trang
+    @GetMapping("/best-selling/page")
+    public ResponseEntity<Page<ProductDTO>> getBestSellingProductsByPage(@RequestParam int page, @RequestParam int size) {
+        Page<ProductDTO> productPage = productService.getBestSellingProductsByPage(page, size);
+        return ResponseEntity.ok(productPage);
+    }
+
+    // Lấy sản phẩm theo category
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable String categoryId) {
+        List<ProductDTO> products = productService.getProductsByCategory(categoryId);
+        return ResponseEntity.ok(products);
+    }
+
+    // Lấy sản phẩm theo category và trang
+    @GetMapping("/category/{categoryId}/page")
+    public ResponseEntity<Page<ProductDTO>> getProductsByCategory(@PathVariable String categoryId, @RequestParam int page, @RequestParam int size) {
+        Page<ProductDTO> productPage = productService.getProductsByCategory(categoryId, page, size);
+        return ResponseEntity.ok(productPage);
+    }
+
     // Xem chi tiết Product
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable String id) {
@@ -65,20 +100,5 @@ public class ProductController {
     public ResponseEntity<List<ProductDTO>> searchProducts(@RequestParam String keyword) {
         List<ProductDTO> products = productService.searchProducts(keyword);
         return ResponseEntity.ok(products);
-    }
-
-    // Lấy sản phẩm theo category
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable String categoryId) {
-        List<ProductDTO> products = productService.getProductsByCategory(categoryId);
-        if (products != null) {
-            return ResponseEntity.ok(products);
-        }
-        return ResponseEntity.notFound().build();
-    }
-    @GetMapping("/page")
-    public ResponseEntity<Page<ProductDTO>> getProductsByPage(@RequestParam int page, @RequestParam int size) {
-        Page<ProductDTO> productPage = productService.getProductsByPage(page, size);
-        return ResponseEntity.ok(productPage);
     }
 }

@@ -1,9 +1,8 @@
 package com.car_equipment.Service;
 
+import com.car_equipment.DTO.CategoryDTO;
 import com.car_equipment.DTO.ProductDTO;
-import com.car_equipment.Model.Category;
 import com.car_equipment.Model.Product;
-import com.car_equipment.Repository.CategoryRepository;
 import com.car_equipment.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,19 +19,48 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
     // Lấy danh sách Product
     public List<ProductDTO> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
     }
 
+    // Lấy danh sách Product theo trang
+    public Page<ProductDTO> getProductsByPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findAll(pageable);
+        return productPage.map(ProductDTO::transferToDTO);
+    }
+
+    // Lấy danh sách sản phẩm theo category
+    public List<ProductDTO> getProductsByCategory(String categoryId) {
+        List<Product> products = productRepository.findProductsByCategoryId(categoryId);
+        return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
+    }
+
+    // Lấy danh sách sản phẩm theo category và trang
+    public Page<ProductDTO> getProductsByCategory(String categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findProductsByCategoryId(categoryId, pageable);
+        return productPage.map(ProductDTO::transferToDTO);
+    }
+
+    // Lấy danh sách sản phẩm bán chạy
+    public List<ProductDTO> getBestSellingProducts() {
+        List<Product> products = productRepository.findBestSellingProducts();
+        return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
+    }
+
+    // Lấy danh sách sản phẩm bán chạy theo trang
+    public Page<ProductDTO> getBestSellingProductsByPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findBestSellingProducts(pageable);
+        return productPage.map(ProductDTO::transferToDTO);
+    }
+
     // Xem chi tiết Product
     public ProductDTO getProductById(String id) {
-        Optional<Product> product = productRepository.findById(id);
-        return product.map(ProductDTO::transferToDTO).orElse(null);
+        return productRepository.findById(id).map(ProductDTO::transferToDTO).orElse(null);
     }
 
     // Thêm Product
@@ -48,11 +74,7 @@ public class ProductService {
         product.setDate(productDTO.getDate());
         product.setQuantityInit(productDTO.getQuantityInit());
         product.setQuantityAvailable(productDTO.getQuantityAvailable());
-
-        Set<Category> categories = productDTO.getCategories().stream()
-                .map(categoryDTO -> categoryRepository.findById(categoryDTO.getId()).orElse(null))
-                .collect(Collectors.toSet());
-        product.setCategories(categories);
+        product.setCategories(productDTO.getCategories().stream().map(CategoryDTO::transferToEntity).collect(Collectors.toSet()));
 
         Product savedProduct = productRepository.save(product);
         return ProductDTO.transferToDTO(savedProduct);
@@ -60,9 +82,7 @@ public class ProductService {
 
     // Sửa Product
     public ProductDTO updateProduct(String id, ProductDTO productDTO) {
-        Optional<Product> productOptional = productRepository.findById(id);
-        if (productOptional.isPresent()) {
-            Product product = productOptional.get();
+        return productRepository.findById(id).map(product -> {
             product.setName(productDTO.getName());
             product.setDescription(productDTO.getDescription());
             product.setPrice(productDTO.getPrice());
@@ -71,49 +91,23 @@ public class ProductService {
             product.setDate(productDTO.getDate());
             product.setQuantityInit(productDTO.getQuantityInit());
             product.setQuantityAvailable(productDTO.getQuantityAvailable());
+            product.setCategories(productDTO.getCategories().stream().map(CategoryDTO::transferToEntity).collect(Collectors.toSet()));
 
-            Set<Category> categories = productDTO.getCategories().stream()
-                    .map(categoryDTO -> categoryRepository.findById(categoryDTO.getId()).orElse(null))
-                    .collect(Collectors.toSet());
-            product.setCategories(categories);
-
-            Product updatedProduct = productRepository.save(product);
-            return ProductDTO.transferToDTO(updatedProduct);
-        }
-        return null;
+            return ProductDTO.transferToDTO(productRepository.save(product));
+        }).orElse(null);
     }
 
     // Xoá Product
     public boolean deleteProduct(String id) {
-        Optional<Product> productOptional = productRepository.findById(id);
-        if (productOptional.isPresent()) {
-            productRepository.deleteById(id);
+        return productRepository.findById(id).map(product -> {
+            productRepository.delete(product);
             return true;
-        }
-        return false;
+        }).orElse(false);
     }
 
     // Tìm kiếm sản phẩm theo từ khoá
     public List<ProductDTO> searchProducts(String keyword) {
-        List<Product> products = productRepository.findByNameContainingIgnoreCase(keyword);
-        return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
+        return productRepository.findByNameContainingIgnoreCase(keyword)
+                .stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
     }
-
-    // Lấy sản phẩm theo category
-    public List<ProductDTO> getProductsByCategory(String categoryId) {
-        Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
-        if (categoryOptional.isPresent()) {
-            Category category = categoryOptional.get();
-            Set<Product> products = category.getProducts();
-            return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
-        }
-        return null;
-    }
-
-    public Page<ProductDTO> getProductsByPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = productRepository.findAll(pageable);
-        return productPage.map(ProductDTO::transferToDTO);
-    }
-
 }

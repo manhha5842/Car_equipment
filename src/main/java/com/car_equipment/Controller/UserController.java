@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
@@ -45,8 +46,18 @@ public class UserController {
         newUser.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
         newUser.setPhoneNumber(registrationDTO.getPhoneNumber());
         newUser.setRole("USER");
-        userService.saveUser(newUser);
-        return ResponseEntity.ok().body(getRespone(userService.findByEmail(newUser.getEmail()).get()));
+        return ResponseEntity.ok().body(getRespone(userService.saveUser(newUser)));
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> update(@RequestBody UserInfoDTO userInfoDTO) {
+        User user = userService.findById(userInfoDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setEmail(userInfoDTO.getEmail());
+        user.setFullName(userInfoDTO.getFullName());
+        user.setPhoneNumber(userInfoDTO.getPhoneNumber());
+        user.setAvatar(userInfoDTO.getAvatar());
+        return ResponseEntity.ok().body(getRespone(userService.saveUser(user)));
     }
 
     @PostMapping("/login")
@@ -81,8 +92,8 @@ public class UserController {
             newUser.setId(loginDTO.getId());
             newUser.setFullName(loginDTO.getFullName());
             newUser.setEmail(loginDTO.getEmail());
-            user.get().setPhoneNumber(loginDTO.getPhoneNumber());
-            user.get().setAvatar(loginDTO.getAvatar());
+            newUser.setPhoneNumber(loginDTO.getPhoneNumber());
+            newUser.setAvatar(loginDTO.getAvatar());
             newUser.setRole("USER");
             return ResponseEntity.ok().body(getRespone(userService.saveUser(newUser)));
         }
@@ -124,7 +135,7 @@ public class UserController {
     private Map<String, Object> getRespone(User user) {
         String token = jwtTokenProvider.createToken(user.getEmail(), user.getRole());
 
-        UserInfoDTO userInfoDTO = new UserInfoDTO(user.getId(), user.getEmail(), user.getFullName(), user.getAddresses(), user.getPhoneNumber(), user.getAvatar(), user.getRole());
+        UserInfoDTO userInfoDTO = new UserInfoDTO(user.getId(), user.getEmail(), user.getFullName(), user.getAddresses().stream().map(AddressDTO::transferToDTO).collect(Collectors.toSet()), user.getPhoneNumber(), user.getAvatar(), user.getRole());
         Map<String, Object> response = new HashMap<>();
         response.put("user", userInfoDTO);
         response.put("token", token);

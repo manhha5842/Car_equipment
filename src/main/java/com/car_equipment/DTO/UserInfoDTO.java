@@ -11,12 +11,12 @@ public class UserInfoDTO {
     private String id;
     private String email;
     private String fullName;
-    private Set<Address> addresses;
+    private Set<AddressDTO> addresses;
     private String phoneNumber;
     private String avatar;
     private String role;
 
-    public UserInfoDTO(String id, String email, String fullName, Set<Address> addresses, String phoneNumber, String avatar, String role) {
+    public UserInfoDTO(String id, String email, String fullName, Set<AddressDTO> addresses, String phoneNumber, String avatar, String role) {
         this.id = id;
         this.email = email;
         this.fullName = fullName;
