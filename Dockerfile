@@ -2,7 +2,7 @@
 FROM openjdk:17-jdk-slim
 
 # Đặt biến môi trường để chỉ định tên file JAR
-ARG JAR_FILE=target/Car_equipment-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=target/app.jar
 
 # Sao chép file JAR vào trong container
 COPY ${JAR_FILE} app.jar
