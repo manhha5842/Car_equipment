@@ -57,7 +57,19 @@ public class ProductController {
         Page<ProductDTO> productPage = productService.getProductsByCategoryId(categoryId, page, size);
         return ResponseEntity.ok(productPage);
     }
+    // Lấy danh sách sản phẩm được xem nhiều nhất
+    @GetMapping("/most-viewed")
+    public ResponseEntity<List<ProductDTO>> getMostViewedProducts() {
+        List<ProductDTO> products = productService.getMostViewedProducts();
+        return ResponseEntity.ok(products);
+    }
 
+    // Lấy danh sách sản phẩm được xem nhiều nhất theo trang
+    @GetMapping("/most-viewed/page")
+    public ResponseEntity<Page<ProductDTO>> getMostViewedProductsByPage(@RequestParam int page, @RequestParam int size) {
+        Page<ProductDTO> productPage = productService.getMostViewedProductsByPage(page, size);
+        return ResponseEntity.ok(productPage);
+    }
     // Xem chi tiết Product
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable String id) {
