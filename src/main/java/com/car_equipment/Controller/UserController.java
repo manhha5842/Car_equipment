@@ -11,14 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -49,14 +48,20 @@ public class UserController {
         return ResponseEntity.ok().body(getRespone(userService.saveUser(newUser)));
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<?> update(@RequestBody UserInfoDTO userInfoDTO) {
-        User user = userService.findById(userInfoDTO.getId())
+    @PostMapping("/updateInfo")
+    public ResponseEntity<?> updateInfo(@RequestParam("id") String id,
+                                        @RequestParam("email") String email,
+                                        @RequestParam("fullName") String fullName,
+                                        @RequestParam("addresses") Set<AddressDTO> addresses,
+                                        @RequestParam("phoneNumber") String phoneNumber,
+                                        @RequestParam("avatar") String avatar,
+                                        @RequestParam("proposedSolution") String proposedSolution, @RequestParam(value = "image") MultipartFile image) {
+        User user = userService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        user.setEmail(userInfoDTO.getEmail());
-        user.setFullName(userInfoDTO.getFullName());
-        user.setPhoneNumber(userInfoDTO.getPhoneNumber());
-        user.setAvatar(userInfoDTO.getAvatar());
+        user.setEmail(email);
+        user.setFullName(fullName);
+        user.setPhoneNumber(phoneNumber);
+        user.setAvatar(avatar);
         return ResponseEntity.ok().body(getRespone(userService.saveUser(user)));
     }
 
