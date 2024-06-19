@@ -3,7 +3,7 @@ package com.car_equipment.DTO;
 import com.car_equipment.Model.Product;
 import lombok.Data;
 
-import java.sql.Time;
+import java.sql.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,11 +13,12 @@ public class ProductDTO {
     private String name;
     private String description;
     private int price;
-    private double rate;
+    private Double rate;
     private String image;
-    private String date;
+    private Date date;
     private int quantityInit;
     private int quantityAvailable;
+    private int viewCount;
     private Set<CategoryDTO> categories;
 
     public static ProductDTO transferToDTO(Product product) {
@@ -28,9 +29,10 @@ public class ProductDTO {
         dto.setPrice(product.getPrice());
         dto.setRate(product.getRate());
         dto.setImage(product.getImage());
-        dto.setDate(product.getDate().toString());
+        dto.setDate(product.getDate());
         dto.setQuantityInit(product.getQuantityInit());
         dto.setQuantityAvailable(product.getQuantityAvailable());
+        dto.setViewCount(product.getViewCount());
         dto.setCategories(product.getCategories().stream().map(CategoryDTO::transferToDTO).collect(Collectors.toSet()));
         return dto;
     }

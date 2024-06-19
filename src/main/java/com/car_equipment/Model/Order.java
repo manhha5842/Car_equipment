@@ -5,7 +5,6 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Set;
 
@@ -31,7 +30,7 @@ public class Order implements Serializable {
     private Address address;
 
     @Column(name = "order_datetime")
-    private Time orderDateTime;
+    private Timestamp orderDateTime;
 
     @Column(name = "delivery_fee")
     private int deliveryFee;
@@ -63,11 +62,6 @@ public class Order implements Serializable {
         this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    @ManyToMany
-    @JoinTable(
-            name = "order_product",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private Set<Product> products;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrderProduct> orderProducts;
 }

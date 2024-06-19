@@ -13,14 +13,15 @@ public class CategoryDTO {
         CategoryDTO dto = new CategoryDTO();
         dto.setId(category.getId());
         dto.setName(category.getName());
-        dto.setImageCategory(category.getImage_category());
+        dto.setImageCategory(category.getImageCategory());
         return dto;
     }
-    public static Category transferToEntity(CategoryDTO categoryDTO) {
+
+    public static Category transferToEntity(CategoryDTO dto) {
         Category category = new Category();
-        category.setId(categoryDTO.getId());
-        category.setName(categoryDTO.getName());
-        category.setImage_category(categoryDTO.getImageCategory());
+        category.setId(dto.getId());
+        category.setName(dto.getName());
+        category.setImageCategory(dto.getImageCategory());
         return category;
     }
 }

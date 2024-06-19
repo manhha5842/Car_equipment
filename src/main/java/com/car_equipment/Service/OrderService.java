@@ -1,10 +1,7 @@
 package com.car_equipment.Service;
 
 import com.car_equipment.DTO.OrderDTO;
-import com.car_equipment.Model.Address;
-import com.car_equipment.Model.Order;
-import com.car_equipment.Model.OrderStatus;
-import com.car_equipment.Model.User;
+import com.car_equipment.Model.*;
 import com.car_equipment.Repository.AddressRepository;
 import com.car_equipment.Repository.OrderRepository;
 import com.car_equipment.Repository.UserRepository;
@@ -77,7 +74,7 @@ public class OrderService {
         order.setDeliveryFee(orderDTO.getDeliveryFee());
         order.setTotalAmount(orderDTO.getTotalAmount());
         order.setPaid(orderDTO.isPaid());
-        order.setStatus(orderDTO.getStatus());
+        order.setStatus(OrderStatus.valueOf(orderDTO.getStatus()));
         order.setReview(orderDTO.getReview());
         order.setNote(orderDTO.getNote());
 
@@ -100,7 +97,7 @@ public class OrderService {
             order.setDeliveryFee(orderDTO.getDeliveryFee());
             order.setTotalAmount(orderDTO.getTotalAmount());
             order.setPaid(orderDTO.isPaid());
-            order.setStatus(orderDTO.getStatus());
+            order.setStatus(OrderStatus.valueOf(orderDTO.getStatus()));
             order.setReview(orderDTO.getReview());
             order.setNote(orderDTO.getNote());
 

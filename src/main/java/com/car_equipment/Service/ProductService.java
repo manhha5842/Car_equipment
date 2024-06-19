@@ -59,6 +59,7 @@ public class ProductService {
         Page<Product> productPage = productRepository.findBestSellingProducts(pageable);
         return productPage.map(ProductDTO::transferToDTO);
     }
+
     // Lấy danh sách sản phẩm được xem nhiều nhất
     public List<ProductDTO> getMostViewedProducts() {
         List<Product> products = productRepository.findMostViewedProducts();
@@ -71,6 +72,7 @@ public class ProductService {
         Page<Product> productPage = productRepository.findMostViewedProducts(pageable);
         return productPage.map(ProductDTO::transferToDTO);
     }
+
     // Xem chi tiết Product
     public ProductDTO getProductById(String id) {
         Optional<Product> productOptional = productRepository.findById(id);
@@ -91,7 +93,7 @@ public class ProductService {
         product.setPrice(productDTO.getPrice());
         product.setRate(productDTO.getRate());
         product.setImage(productDTO.getImage());
-        product.setDate(Date.valueOf(productDTO.getDate()) );
+        product.setDate(productDTO.getDate());
         product.setQuantityInit(productDTO.getQuantityInit());
         product.setQuantityAvailable(productDTO.getQuantityAvailable());
         product.setCategories(productDTO.getCategories().stream().map(CategoryDTO::transferToEntity).collect(Collectors.toSet()));
@@ -108,7 +110,7 @@ public class ProductService {
             product.setPrice(productDTO.getPrice());
             product.setRate(productDTO.getRate());
             product.setImage(productDTO.getImage());
-            product.setDate(Date.valueOf(productDTO.getDate()));
+            product.setDate(productDTO.getDate());
             product.setQuantityInit(productDTO.getQuantityInit());
             product.setQuantityAvailable(productDTO.getQuantityAvailable());
             product.setCategories(productDTO.getCategories().stream().map(CategoryDTO::transferToEntity).collect(Collectors.toSet()));

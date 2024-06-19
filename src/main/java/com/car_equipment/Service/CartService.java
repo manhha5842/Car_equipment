@@ -2,6 +2,7 @@ package com.car_equipment.Service;
 
 import com.car_equipment.DTO.CartDTO;
 import com.car_equipment.Model.Cart;
+import com.car_equipment.Model.CartProduct;
 import com.car_equipment.Model.Product;
 import com.car_equipment.Model.User;
 import com.car_equipment.Repository.CartRepository;
@@ -25,7 +26,7 @@ public class CartService {
     private UserRepository userRepository;
 
     // Thêm sản phẩm vào giỏ hàng thông qua ID của User
-    public CartDTO addProductToCartByUserId(String userId, String productId) {
+    public CartDTO addProductToCartByUserId(String userId, String productId, int quantity) {
         Optional<User> userOptional = userRepository.findById(userId);
         Optional<Product> productOptional = productRepository.findById(productId);
 
@@ -38,7 +39,12 @@ public class CartService {
             });
 
             Product product = productOptional.get();
-            cart.getProducts().add(product);
+            CartProduct cartProduct = new CartProduct();
+            cartProduct.setCart(cart);
+            cartProduct.setProduct(product);
+            cartProduct.setQuantity(quantity);
+
+            cart.getCartProducts().add(cartProduct);
             Cart updatedCart = cartRepository.save(cart);
             return CartDTO.transferToDTO(updatedCart);
         }
@@ -46,14 +52,31 @@ public class CartService {
     }
 
     // Thêm sản phẩm vào giỏ hàng
-    public CartDTO addProductToCart(String cartId, String productId) {
+    public CartDTO addProductToCart(String cartId, String productId, int quantity) {
         Optional<Cart> cartOptional = cartRepository.findById(cartId);
         Optional<Product> productOptional = productRepository.findById(productId);
 
         if (cartOptional.isPresent() && productOptional.isPresent()) {
             Cart cart = cartOptional.get();
             Product product = productOptional.get();
-            cart.getProducts().add(product);
+
+            boolean productExists = cart.getCartProducts().stream()
+                    .anyMatch(cp -> cp.getProduct().getId().equals(product.getId()));
+
+            if (productExists) {
+                cart.getCartProducts().forEach(cp -> {
+                    if (cp.getProduct().getId().equals(product.getId())) {
+                        cp.setQuantity(cp.getQuantity() + quantity);
+                    }
+                });
+            } else {
+                CartProduct cartProduct = new CartProduct();
+                cartProduct.setCart(cart);
+                cartProduct.setProduct(product);
+                cartProduct.setQuantity(quantity);
+                cart.getCartProducts().add(cartProduct);
+            }
+
             Cart updatedCart = cartRepository.save(cart);
             return CartDTO.transferToDTO(updatedCart);
         }
@@ -85,7 +108,7 @@ public class CartService {
         if (cartOptional.isPresent() && productOptional.isPresent()) {
             Cart cart = cartOptional.get();
             Product product = productOptional.get();
-            cart.getProducts().remove(product);
+            cart.getCartProducts().removeIf(cp -> cp.getProduct().getId().equals(product.getId()));
             Cart updatedCart = cartRepository.save(cart);
             return CartDTO.transferToDTO(updatedCart);
         }
@@ -98,7 +121,7 @@ public class CartService {
 
         if (cartOptional.isPresent()) {
             Cart cart = cartOptional.get();
-            cart.getProducts().clear();
+            cart.getCartProducts().clear();
             Cart updatedCart = cartRepository.save(cart);
             return CartDTO.transferToDTO(updatedCart);
         }

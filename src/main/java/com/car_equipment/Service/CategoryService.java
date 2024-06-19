@@ -32,7 +32,7 @@ public class CategoryService {
     public CategoryDTO addCategory(CategoryDTO categoryDTO) {
         Category category = new Category();
         category.setName(categoryDTO.getName());
-        category.setImage_category(categoryDTO.getImageCategory());
+        category.setImageCategory(categoryDTO.getImageCategory());
         Category savedCategory = categoryRepository.save(category);
         return CategoryDTO.transferToDTO(savedCategory);
     }
@@ -43,7 +43,7 @@ public class CategoryService {
         if (categoryOptional.isPresent()) {
             Category category = categoryOptional.get();
             category.setName(categoryDTO.getName());
-            category.setImage_category(categoryDTO.getImageCategory());
+            category.setImageCategory(categoryDTO.getImageCategory());
             Category updatedCategory = categoryRepository.save(category);
             return CategoryDTO.transferToDTO(updatedCategory);
         }

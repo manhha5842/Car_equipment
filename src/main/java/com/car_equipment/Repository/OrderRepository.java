@@ -11,9 +11,9 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
-    Page<Order> findAll(Pageable pageable);
     List<Order> findByUserId(String userId);
     Page<Order> findByUserId(String userId, Pageable pageable);
     List<Order> findByStatus(OrderStatus status);
     Page<Order> findByStatus(OrderStatus status, Pageable pageable);
+
 }

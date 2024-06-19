@@ -6,8 +6,6 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
@@ -46,8 +44,10 @@ public class Product implements Serializable {
 
     @Column(name = "quantity_available")
     private int quantityAvailable;
+
     @Column(name = "view_count")
     private int viewCount;
+
     @ManyToMany
     @JoinTable(
             name = "category_product",
@@ -59,9 +59,9 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product")
     private Set<Review> reviews;
 
-    @ManyToMany(mappedBy = "products")
-    private Set<Cart> carts;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CartProduct> cartProducts;
 
-    @ManyToMany(mappedBy = "products")
-    private Set<Order> orders;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrderProduct> orderProducts;
 }

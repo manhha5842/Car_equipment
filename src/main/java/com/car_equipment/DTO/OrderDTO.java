@@ -1,11 +1,9 @@
 package com.car_equipment.DTO;
 
 import com.car_equipment.Model.Order;
-import com.car_equipment.Model.OrderStatus;
-import com.car_equipment.Model.Product;
 import lombok.Data;
 
-import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,30 +12,37 @@ public class OrderDTO {
     private String id;
     private String userId;
     private String addressId;
-    private Time orderDateTime;
+    private Timestamp orderDateTime;
     private int deliveryFee;
     private int totalAmount;
     private boolean isPaid;
-    private OrderStatus status;
+    private String status;
     private String review;
     private String note;
-    private Set<ProductDTO> products;
-    private String createdAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    private Set<ProductCartDTO> products;
 
     public static OrderDTO transferToDTO(Order order) {
-        OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setId(order.getId());
-        orderDTO.setUserId(order.getUser().getId());
-        orderDTO.setAddressId(order.getAddress().getId());
-        orderDTO.setOrderDateTime(order.getOrderDateTime());
-        orderDTO.setDeliveryFee(order.getDeliveryFee());
-        orderDTO.setTotalAmount(order.getTotalAmount());
-        orderDTO.setPaid(order.isPaid());
-        orderDTO.setStatus(order.getStatus());
-        orderDTO.setReview(order.getReview());
-        orderDTO.setNote(order.getNote());
-        orderDTO.setProducts(order.getProducts().stream().map(ProductDTO::transferToDTO).collect(Collectors.toSet()));
-        orderDTO.setCreatedAt(order.getCreatedAt().toString());
-        return orderDTO;
+        OrderDTO dto = new OrderDTO();
+        dto.setId(order.getId());
+        dto.setUserId(order.getUser().getId());
+        dto.setAddressId(order.getAddress().getId());
+        dto.setOrderDateTime(order.getOrderDateTime());
+        dto.setDeliveryFee(order.getDeliveryFee());
+        dto.setTotalAmount(order.getTotalAmount());
+        dto.setPaid(order.isPaid());
+        dto.setStatus(order.getStatus().toString());
+        dto.setReview(order.getReview());
+        dto.setNote(order.getNote());
+        dto.setCreatedAt(order.getCreatedAt());
+        dto.setUpdatedAt(order.getUpdatedAt());
+        dto.setProducts(order.getOrderProducts().stream().map(orderProduct -> {
+            ProductCartDTO productCartDTO = new ProductCartDTO();
+            productCartDTO.setProduct(ProductDTO.transferToDTO(orderProduct.getProduct()));
+            productCartDTO.setQuantity(orderProduct.getQuantity());
+            return productCartDTO;
+        }).collect(Collectors.toSet()));
+        return dto;
     }
 }

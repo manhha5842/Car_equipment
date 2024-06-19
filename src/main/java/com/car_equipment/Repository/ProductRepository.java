@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
 
 
@@ -15,11 +14,12 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, String> {
     List<Product> findByNameContainingIgnoreCase(String keyword);
 
-    @Query("SELECT p FROM Product p JOIN p.orders o GROUP BY p.id ORDER BY SUM(o.totalAmount) DESC")
+    @Query("SELECT p FROM Product p JOIN p.orderProducts op GROUP BY p.id ORDER BY SUM(op.quantity) DESC")
     List<Product> findBestSellingProducts();
 
-    @Query("SELECT p FROM Product p JOIN p.orders o GROUP BY p.id ORDER BY SUM(o.totalAmount) DESC")
+    @Query("SELECT p FROM Product p JOIN p.orderProducts op GROUP BY p.id ORDER BY SUM(op.quantity) DESC")
     Page<Product> findBestSellingProducts(Pageable pageable);
+    
 
     @Query("SELECT p FROM Product p JOIN p.categories c WHERE c.id = :categoryId")
     List<Product> findProductsByCategoryId(String categoryId);

@@ -24,7 +24,7 @@ public class Category implements Serializable {
     private String name;
 
     @Column(name = "image_category")
-    private String image_category;
+    private String imageCategory;
 
     @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
     private Set<Product> products;

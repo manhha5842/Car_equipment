@@ -13,20 +13,20 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
-    // Thêm sản phẩm vào giỏ hàng
-    @PostMapping("/{cartId}/products/{productId}")
-    public ResponseEntity<CartDTO> addProductToCart(@PathVariable String cartId, @PathVariable String productId) {
-        CartDTO updatedCart = cartService.addProductToCart(cartId, productId);
+    // Thêm sản phẩm vào giỏ hàng thông qua ID của User
+    @PostMapping("/user/{userId}/products/{productId}")
+    public ResponseEntity<CartDTO> addProductToCartByUserId(@PathVariable String userId, @PathVariable String productId, @RequestParam int quantity) {
+        CartDTO updatedCart = cartService.addProductToCartByUserId(userId, productId, quantity);
         if (updatedCart != null) {
             return ResponseEntity.ok(updatedCart);
         }
         return ResponseEntity.notFound().build();
     }
 
-    // Thêm sản phẩm vào giỏ hàng thông qua ID của User
-    @PostMapping("/user/{userId}/products/{productId}")
-    public ResponseEntity<CartDTO> addProductToCartByUserId(@PathVariable String userId, @PathVariable String productId) {
-        CartDTO updatedCart = cartService.addProductToCartByUserId(userId, productId);
+    // Thêm sản phẩm vào giỏ hàng
+    @PostMapping("/{cartId}/products/{productId}")
+    public ResponseEntity<CartDTO> addProductToCart(@PathVariable String cartId, @PathVariable String productId, @RequestParam int quantity) {
+        CartDTO updatedCart = cartService.addProductToCart(cartId, productId, quantity);
         if (updatedCart != null) {
             return ResponseEntity.ok(updatedCart);
         }
