@@ -1,7 +1,6 @@
 package com.car_equipment.Service;
 
 import com.car_equipment.DTO.CartDTO;
-import com.car_equipment.DTO.ProductDTO;
 import com.car_equipment.Model.Cart;
 import com.car_equipment.Model.Product;
 import com.car_equipment.Model.User;
@@ -12,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class CartService {
@@ -26,6 +23,27 @@ public class CartService {
 
     @Autowired
     private UserRepository userRepository;
+
+    // Thêm sản phẩm vào giỏ hàng thông qua ID của User
+    public CartDTO addProductToCartByUserId(String userId, String productId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<Product> productOptional = productRepository.findById(productId);
+
+        if (userOptional.isPresent() && productOptional.isPresent()) {
+            User user = userOptional.get();
+            Cart cart = cartRepository.findByUser(user).orElseGet(() -> {
+                Cart newCart = new Cart();
+                newCart.setUser(user);
+                return newCart;
+            });
+
+            Product product = productOptional.get();
+            cart.getProducts().add(product);
+            Cart updatedCart = cartRepository.save(cart);
+            return CartDTO.transferToDTO(updatedCart);
+        }
+        return null;
+    }
 
     // Thêm sản phẩm vào giỏ hàng
     public CartDTO addProductToCart(String cartId, String productId) {
@@ -41,7 +59,6 @@ public class CartService {
         }
         return null;
     }
- 
 
     // Lấy giỏ hàng theo ID
     public CartDTO getCartById(String id) {
