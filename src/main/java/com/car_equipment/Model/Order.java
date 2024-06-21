@@ -43,7 +43,7 @@ public class Order implements Serializable {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private EnumOrderStatus status;
 
     @Column(name = "review")
     private String review;

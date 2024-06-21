@@ -3,6 +3,7 @@ package com.car_equipment.Service;
 import com.car_equipment.DTO.CartDTO;
 import com.car_equipment.Model.Cart;
 import com.car_equipment.Model.CartProduct;
+import com.car_equipment.Model.CartProductId;
 import com.car_equipment.Model.Product;
 import com.car_equipment.Model.User;
 import com.car_equipment.Repository.CartRepository;
@@ -39,12 +40,24 @@ public class CartService {
             });
 
             Product product = productOptional.get();
-            CartProduct cartProduct = new CartProduct();
-            cartProduct.setCart(cart);
-            cartProduct.setProduct(product);
-            cartProduct.setQuantity(quantity);
+            CartProductId cartProductId = new CartProductId();
+            cartProductId.setCartId(cart.getId());
+            cartProductId.setProductId(product.getId());
 
-            cart.getCartProducts().add(cartProduct);
+            CartProduct cartProduct = cart.getCartProducts().stream()
+                    .filter(cp -> cp.getId().equals(cartProductId))
+                    .findFirst()
+                    .orElseGet(() -> {
+                        CartProduct newCartProduct = new CartProduct();
+                        newCartProduct.setId(cartProductId);
+                        newCartProduct.setCart(cart);
+                        newCartProduct.setProduct(product);
+                        newCartProduct.setQuantity(0);
+                        cart.getCartProducts().add(newCartProduct);
+                        return newCartProduct;
+                    });
+
+            cartProduct.setQuantity(cartProduct.getQuantity() + quantity);
             Cart updatedCart = cartRepository.save(cart);
             return CartDTO.transferToDTO(updatedCart);
         }
@@ -60,23 +73,24 @@ public class CartService {
             Cart cart = cartOptional.get();
             Product product = productOptional.get();
 
-            boolean productExists = cart.getCartProducts().stream()
-                    .anyMatch(cp -> cp.getProduct().getId().equals(product.getId()));
+            CartProductId cartProductId = new CartProductId();
+            cartProductId.setCartId(cart.getId());
+            cartProductId.setProductId(product.getId());
 
-            if (productExists) {
-                cart.getCartProducts().forEach(cp -> {
-                    if (cp.getProduct().getId().equals(product.getId())) {
-                        cp.setQuantity(cp.getQuantity() + quantity);
-                    }
-                });
-            } else {
-                CartProduct cartProduct = new CartProduct();
-                cartProduct.setCart(cart);
-                cartProduct.setProduct(product);
-                cartProduct.setQuantity(quantity);
-                cart.getCartProducts().add(cartProduct);
-            }
+            CartProduct cartProduct = cart.getCartProducts().stream()
+                    .filter(cp -> cp.getId().equals(cartProductId))
+                    .findFirst()
+                    .orElseGet(() -> {
+                        CartProduct newCartProduct = new CartProduct();
+                        newCartProduct.setId(cartProductId);
+                        newCartProduct.setCart(cart);
+                        newCartProduct.setProduct(product);
+                        newCartProduct.setQuantity(0);
+                        cart.getCartProducts().add(newCartProduct);
+                        return newCartProduct;
+                    });
 
+            cartProduct.setQuantity(cartProduct.getQuantity() + quantity);
             Cart updatedCart = cartRepository.save(cart);
             return CartDTO.transferToDTO(updatedCart);
         }
@@ -108,7 +122,11 @@ public class CartService {
         if (cartOptional.isPresent() && productOptional.isPresent()) {
             Cart cart = cartOptional.get();
             Product product = productOptional.get();
-            cart.getCartProducts().removeIf(cp -> cp.getProduct().getId().equals(product.getId()));
+            CartProductId cartProductId = new CartProductId();
+            cartProductId.setCartId(cart.getId());
+            cartProductId.setProductId(product.getId());
+
+            cart.getCartProducts().removeIf(cp -> cp.getId().equals(cartProductId));
             Cart updatedCart = cartRepository.save(cart);
             return CartDTO.transferToDTO(updatedCart);
         }

@@ -2,6 +2,8 @@ package com.car_equipment.Model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
@@ -11,6 +13,8 @@ import java.util.Set;
 @Entity
 @Table(name = "product")
 @Data
+@EqualsAndHashCode(of = "id")
+@ToString(of = "id")
 public class Product implements Serializable {
     @Id
     @GeneratedValue(generator = "UUID")

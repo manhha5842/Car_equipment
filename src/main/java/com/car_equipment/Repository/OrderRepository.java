@@ -1,7 +1,7 @@
 package com.car_equipment.Repository;
 
 import com.car_equipment.Model.Order;
-import com.car_equipment.Model.OrderStatus;
+import com.car_equipment.Model.EnumOrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +13,7 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, String> {
     List<Order> findByUserId(String userId);
     Page<Order> findByUserId(String userId, Pageable pageable);
-    List<Order> findByStatus(OrderStatus status);
-    Page<Order> findByStatus(OrderStatus status, Pageable pageable);
+    List<Order> findByStatus(EnumOrderStatus status);
+    Page<Order> findByStatus(EnumOrderStatus status, Pageable pageable);
 
 }
