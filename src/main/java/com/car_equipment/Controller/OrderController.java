@@ -1,7 +1,7 @@
 package com.car_equipment.Controller;
 
 import com.car_equipment.DTO.OrderDTO;
-import com.car_equipment.Model.OrderStatus;
+import com.car_equipment.Model.EnumOrderStatus;
 import com.car_equipment.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -51,14 +51,14 @@ public class OrderController {
 
     // Lấy order theo status
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<OrderDTO>> getOrdersByStatus(@PathVariable OrderStatus status) {
+    public ResponseEntity<List<OrderDTO>> getOrdersByStatus(@PathVariable EnumOrderStatus status) {
         List<OrderDTO> orders = orderService.getOrdersByStatus(status);
         return ResponseEntity.ok(orders);
     }
 
     // Lấy order theo status và trang
     @GetMapping("/status/{status}/page")
-    public ResponseEntity<Page<OrderDTO>> getOrdersByStatus(@PathVariable OrderStatus status, @RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<Page<OrderDTO>> getOrdersByStatus(@PathVariable EnumOrderStatus status, @RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<OrderDTO> orders = orderService.getOrdersByStatus(status, pageable);
         return ResponseEntity.ok(orders);
@@ -103,7 +103,7 @@ public class OrderController {
 
     // Cập nhật trạng thái Order
     @PatchMapping("/{id}/status")
-    public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable String id, @RequestParam OrderStatus status) {
+    public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable String id, @RequestParam EnumOrderStatus status) {
         OrderDTO updatedOrder = orderService.updateOrderStatus(id, status);
         if (updatedOrder != null) {
             return ResponseEntity.ok(updatedOrder);

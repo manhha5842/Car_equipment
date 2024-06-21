@@ -3,7 +3,7 @@ package com.car_equipment.Model;
 import lombok.Getter;
 
 @Getter
-public enum OrderStatus {
+public enum EnumOrderStatus {
     PENDING("Đang chờ"),
     PROCESSING("Đang chuẩn bị hàng"),
     SHIPPED("Đang vận chuyển"),
@@ -12,7 +12,7 @@ public enum OrderStatus {
 
     private final String displayName;
 
-    OrderStatus(String displayName) {
+    EnumOrderStatus(String displayName) {
         this.displayName = displayName;
     }
 

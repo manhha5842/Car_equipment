@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class OrderDTO {
     private String id;
     private String userId;
-    private String addressId;
+    private AddressDTO address;
     private Timestamp orderDateTime;
     private int deliveryFee;
     private int totalAmount;
@@ -27,7 +27,7 @@ public class OrderDTO {
         OrderDTO dto = new OrderDTO();
         dto.setId(order.getId());
         dto.setUserId(order.getUser().getId());
-        dto.setAddressId(order.getAddress().getId());
+        dto.setAddress( AddressDTO.transferToDTO(order.getAddress()));
         dto.setOrderDateTime(order.getOrderDateTime());
         dto.setDeliveryFee(order.getDeliveryFee());
         dto.setTotalAmount(order.getTotalAmount());

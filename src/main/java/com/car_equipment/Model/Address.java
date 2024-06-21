@@ -18,16 +18,36 @@ public class Address implements Serializable {
     )
     @Column(name = "id", updatable = false, nullable = false)
     private String id;
-    @Column(name = "unit_number")
-    private int unit_number;
-    @Column(name = "street")
-    private String street;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "address_detail")
+    private String addressDetail;
+
     @Column(name = "district")
     private String district;
-    @Column(name = "city")
-    private String city;
+
+    @Column(name = "ward")
+    private String ward;
+
+    @Column(name = "province")
+    private String province;
+
+    @Column(name = "latitude")
+    private String latitude;
+
+    @Column(name = "longitude")
+    private String longitude;
+
+    @Column(name = "is_default")
+    private Boolean isDefault;
+
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private EnumAddressStatus status;
 }

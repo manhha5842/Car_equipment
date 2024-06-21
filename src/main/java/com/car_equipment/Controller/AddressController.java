@@ -15,14 +15,14 @@ public class AddressController {
     @Autowired
     private AddressService addressService;
 
-    // Lấy danh sách Address
-    @GetMapping
-    public ResponseEntity<List<AddressDTO>> getAllAddresses() {
-        List<AddressDTO> addresses = addressService.getAllAddresses();
+    // Lấy danh sách địa chỉ của user
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<AddressDTO>> getAddressesByUserId(@PathVariable String userId) {
+        List<AddressDTO> addresses = addressService.getAddressesActiveByUserId(userId);
         return ResponseEntity.ok(addresses);
     }
 
-    // Xem chi tiết Address
+    // Xem chi tiết địa chỉ
     @GetMapping("/{id}")
     public ResponseEntity<AddressDTO> getAddressById(@PathVariable String id) {
         AddressDTO address = addressService.getAddressById(id);
@@ -32,14 +32,17 @@ public class AddressController {
         return ResponseEntity.notFound().build();
     }
 
-    // Thêm Address
+    // Thêm địa chỉ
     @PostMapping
     public ResponseEntity<AddressDTO> addAddress(@RequestBody AddressDTO addressDTO) {
         AddressDTO newAddress = addressService.addAddress(addressDTO);
-        return ResponseEntity.ok(newAddress);
+        if (newAddress != null) {
+            return ResponseEntity.ok(newAddress);
+        }
+        return ResponseEntity.badRequest().build();
     }
 
-    // Sửa Address
+    // Sửa địa chỉ
     @PutMapping("/{id}")
     public ResponseEntity<AddressDTO> updateAddress(@PathVariable String id, @RequestBody AddressDTO addressDTO) {
         AddressDTO updatedAddress = addressService.updateAddress(id, addressDTO);
@@ -49,7 +52,7 @@ public class AddressController {
         return ResponseEntity.notFound().build();
     }
 
-    // Xoá Address
+    // Xoá địa chỉ
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(@PathVariable String id) {
         boolean isDeleted = addressService.deleteAddress(id);
