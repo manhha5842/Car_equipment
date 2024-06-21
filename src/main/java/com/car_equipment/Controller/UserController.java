@@ -62,15 +62,11 @@ public class UserController {
             @RequestParam("id") String id,
             @RequestParam("email") String email,
             @RequestParam("fullName") String fullName,
-            @RequestParam("addresses") String addressesJson,
             @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("image") MultipartFile image) throws IOException, ForbiddenException, TooManyRequestsException, InternalServerException, UnauthorizedException, BadRequestException, UnknownException {
 
         try {
-            // Chuyển đổi JSON của addresses thành Set<AddressDTO>
-            ObjectMapper objectMapper = new ObjectMapper();
-            Set<AddressDTO> addresses = objectMapper.readValue(addressesJson, new TypeReference<Set<AddressDTO>>() {
-            });
+ 
 
             User user = userService.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -91,11 +87,6 @@ public class UserController {
             String imagePath = result.getResponseMetaData().getMap().get("url").toString();
             user.setAvatar(imagePath);
 
-            // Xử lý địa chỉ
-            for (AddressDTO addressDTO : addresses) {
-                addressDTO.setUserId(id);
-                addressService.addAddress(addressDTO);
-            }
 
             return ResponseEntity.ok().body(getRespone(userService.saveUser(user)));
         }catch (IllegalStateException e) {
