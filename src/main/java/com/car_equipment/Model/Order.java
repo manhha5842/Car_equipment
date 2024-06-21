@@ -26,7 +26,7 @@ public class Order implements Serializable {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "user_address_id", referencedColumnName = "id")
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
     @Column(name = "order_datetime")

@@ -66,7 +66,7 @@ public class UserController {
             @RequestParam("image") MultipartFile image) throws IOException, ForbiddenException, TooManyRequestsException, InternalServerException, UnauthorizedException, BadRequestException, UnknownException {
 
         try {
- 
+
 
             User user = userService.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
