@@ -1,5 +1,7 @@
 package com.car_equipment.Model;
 
+import com.car_equipment.DTO.AddressDTO;
+import com.car_equipment.Service.UserService;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
@@ -50,4 +52,7 @@ public class Address implements Serializable {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private EnumAddressStatus status;
+
+
+
 }

@@ -86,14 +86,28 @@ public class OrderService {
         Optional<User> userOptional = userRepository.findById(orderDTO.getUserId());
         userOptional.ifPresent(order::setUser);
 
-        Address address = AddressDTO.transferToEntity(orderDTO.getAddress());
+        Address address = transferToEntity(orderDTO.getAddress());
         addressRepository.save(address);
         order.setAddress(address);
 
         Order savedOrder = orderRepository.save(order);
         return OrderDTO.transferToDTO(savedOrder);
     }
-
+    public Address transferToEntity(AddressDTO dto) {
+        Address address = new Address();
+        address.setId(dto.getId());
+        address.setName(dto.getName());
+        address.setAddressDetail(dto.getAddressDetail());
+        address.setDistrict(dto.getDistrict());
+        address.setWard(dto.getWard());
+        address.setProvince(dto.getProvince());
+        address.setLatitude(dto.getLatitude());
+        address.setLongitude(dto.getLongitude());
+        address.setIsDefault(dto.getIsDefault());
+        Optional<User> userOptional = userRepository.findById(dto.getUserId());
+        userOptional.ifPresent(address::setUser);
+        return address;
+    }
     // Sửa Order
     public OrderDTO updateOrder(String id, OrderDTO orderDTO) {
         Optional<Order> orderOptional = orderRepository.findById(id);
@@ -110,7 +124,7 @@ public class OrderService {
             Optional<User> userOptional = userRepository.findById(orderDTO.getUserId());
             userOptional.ifPresent(order::setUser);
 
-            Address address = AddressDTO.transferToEntity(orderDTO.getAddress());
+            Address address = transferToEntity(orderDTO.getAddress());
             addressRepository.save(address);
             order.setAddress(address);
 

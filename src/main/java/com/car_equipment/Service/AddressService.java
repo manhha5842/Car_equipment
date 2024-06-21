@@ -3,6 +3,7 @@ package com.car_equipment.Service;
 import com.car_equipment.DTO.AddressDTO;
 import com.car_equipment.Model.Address;
 import com.car_equipment.Model.EnumAddressStatus;
+import com.car_equipment.Model.User;
 import com.car_equipment.Repository.AddressRepository;
 import com.car_equipment.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class AddressService {
     }
 
     public List<AddressDTO> getAddressesActiveByUserId(String userId) {
-        List<Address> addresses = addressRepository.findByUserIdAndStatusNot(userId, "DELETED");
+        List<Address> addresses = addressRepository.findByUserIdAndStatusNot(userId, EnumAddressStatus.DELETED);
         return addresses.stream().map(AddressDTO::transferToDTO).collect(Collectors.toList());
     }
 
@@ -40,10 +41,26 @@ public class AddressService {
 
     // Thêm địa chỉ
     public AddressDTO addAddress(AddressDTO addressDTO) {
-        Address address = AddressDTO.transferToEntity(addressDTO);
+        Address address = transferToEntity(addressDTO);
         address.setStatus(EnumAddressStatus.ACTIVE);
         return AddressDTO.transferToDTO(addressRepository.save(address));
 
+    }
+
+    public Address transferToEntity(AddressDTO dto) {
+        Address address = new Address();
+        address.setId(dto.getId());
+        address.setName(dto.getName());
+        address.setAddressDetail(dto.getAddressDetail());
+        address.setDistrict(dto.getDistrict());
+        address.setWard(dto.getWard());
+        address.setProvince(dto.getProvince());
+        address.setLatitude(dto.getLatitude());
+        address.setLongitude(dto.getLongitude());
+        address.setIsDefault(dto.getIsDefault());
+        Optional<User> userOptional = userRepository.findById(dto.getUserId());
+        userOptional.ifPresent(address::setUser);
+        return address;
     }
 
     // Sửa địa chỉ

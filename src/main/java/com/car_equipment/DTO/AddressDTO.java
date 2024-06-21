@@ -32,19 +32,4 @@ public class AddressDTO {
         dto.setUserId(address.getUser().getId());
         return dto;
     }
-    public static Address transferToEntity(AddressDTO dto) {
-        Address address = new Address();
-        address.setId(dto.getId());
-        address.setName(dto.getName());
-        address.setAddressDetail(dto.getAddressDetail());
-        address.setDistrict(dto.getDistrict());
-        address.setWard(dto.getWard());
-        address.setProvince(dto.getProvince());
-        address.setLatitude(dto.getLatitude());
-        address.setLongitude(dto.getLongitude());
-        address.setIsDefault(dto.getIsDefault());
-        UserService userService = new UserService();
-        address.setUser(userService.findById(dto.getUserId()).orElseThrow(()-> new IllegalStateException("User not found")));
-        return address;
-    }
 }
