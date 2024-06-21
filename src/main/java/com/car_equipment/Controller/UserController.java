@@ -63,7 +63,7 @@ public class UserController {
             @RequestParam("email") String email,
             @RequestParam("fullName") String fullName,
             @RequestParam("phoneNumber") String phoneNumber,
-            @RequestParam("image") MultipartFile image) throws IOException, ForbiddenException, TooManyRequestsException, InternalServerException, UnauthorizedException, BadRequestException, UnknownException {
+            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException, ForbiddenException, TooManyRequestsException, InternalServerException, UnauthorizedException, BadRequestException, UnknownException {
 
         try {
 
@@ -74,18 +74,22 @@ public class UserController {
             user.setFullName(fullName);
             user.setPhoneNumber(phoneNumber);
 
-            // Xử lý ảnh với ImageKit
-            ImageKit imageKit = ImageKit.getInstance();
-            Configuration config = new Configuration("public_YiJMjxdBcy00loCsmDp848aKnBM=", "private_y16gn+wwe5b3peEkVWUqy44bfT8=", "https://ik.imagekit.io/manhha5842/newsAPI");
-            imageKit.setConfig(config);
-            byte[] bytes = image.getBytes();
-            FileCreateRequest fileCreateRequestRequest = new FileCreateRequest(bytes,
-                    id.replace(" ", "_") + "" + new Timestamp(System.currentTimeMillis()).from(Instant.now())
-                            + ".jpg");
-            fileCreateRequestRequest.setUseUniqueFileName(false);
-            Result result = ImageKit.getInstance().upload(fileCreateRequestRequest);
-            String imagePath = result.getResponseMetaData().getMap().get("url").toString();
-            user.setAvatar(imagePath);
+            if( !image.isEmpty()){
+                // Xử lý ảnh với ImageKit
+                ImageKit imageKit = ImageKit.getInstance();
+                Configuration config = new Configuration("public_YiJMjxdBcy00loCsmDp848aKnBM=", "private_y16gn+wwe5b3peEkVWUqy44bfT8=", "https://ik.imagekit.io/manhha5842/newsAPI");
+                imageKit.setConfig(config);
+                byte[] bytes = image.getBytes();
+                System.currentTimeMillis();
+                FileCreateRequest fileCreateRequestRequest = new FileCreateRequest(bytes,
+                        id.replace(" ", "_") + Timestamp.from(Instant.now())
+                                + ".jpg");
+                fileCreateRequestRequest.setUseUniqueFileName(false);
+                Result result = ImageKit.getInstance().upload(fileCreateRequestRequest);
+                String imagePath = result.getResponseMetaData().getMap().get("url").toString();
+                user.setAvatar(imagePath);
+            }
+
 
 
             return ResponseEntity.ok().body(getRespone(userService.saveUser(user)));
