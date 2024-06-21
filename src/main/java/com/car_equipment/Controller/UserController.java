@@ -74,7 +74,7 @@ public class UserController {
             user.setFullName(fullName);
             user.setPhoneNumber(phoneNumber);
 
-            if( !image.isEmpty() ){
+            if( image != null ){
                 // Xử lý ảnh với ImageKit
                 ImageKit imageKit = ImageKit.getInstance();
                 Configuration config = new Configuration("public_YiJMjxdBcy00loCsmDp848aKnBM=", "private_y16gn+wwe5b3peEkVWUqy44bfT8=", "https://ik.imagekit.io/manhha5842/newsAPI");
@@ -92,9 +92,6 @@ public class UserController {
                 }
 
             }
-
-
-
             return ResponseEntity.ok().body(getRespone(userService.saveUser(user)));
         }catch (IllegalStateException e) {
             System.out.println(e);
