@@ -74,20 +74,23 @@ public class UserController {
             user.setFullName(fullName);
             user.setPhoneNumber(phoneNumber);
 
-            if( !image.isEmpty()){
+            if( !image.isEmpty() ){
                 // Xử lý ảnh với ImageKit
                 ImageKit imageKit = ImageKit.getInstance();
                 Configuration config = new Configuration("public_YiJMjxdBcy00loCsmDp848aKnBM=", "private_y16gn+wwe5b3peEkVWUqy44bfT8=", "https://ik.imagekit.io/manhha5842/newsAPI");
                 imageKit.setConfig(config);
                 byte[] bytes = image.getBytes();
-                System.currentTimeMillis();
-                FileCreateRequest fileCreateRequestRequest = new FileCreateRequest(bytes,
-                        id.replace(" ", "_") + Timestamp.from(Instant.now())
-                                + ".jpg");
-                fileCreateRequestRequest.setUseUniqueFileName(false);
-                Result result = ImageKit.getInstance().upload(fileCreateRequestRequest);
-                String imagePath = result.getResponseMetaData().getMap().get("url").toString();
-                user.setAvatar(imagePath);
+                if(bytes.length>0){
+                    System.currentTimeMillis();
+                    FileCreateRequest fileCreateRequestRequest = new FileCreateRequest(bytes,
+                            id.replace(" ", "_") + Timestamp.from(Instant.now())
+                                    + ".jpg");
+                    fileCreateRequestRequest.setUseUniqueFileName(false);
+                    Result result = ImageKit.getInstance().upload(fileCreateRequestRequest);
+                    String imagePath = result.getResponseMetaData().getMap().get("url").toString();
+                    user.setAvatar(imagePath);
+                }
+
             }
 
 
