@@ -15,6 +15,8 @@ public class ReviewDTO {
     private String userId;
     private int rate;
     private String message;
+    private String name;
+    private String image;
     private String createdAt;
 
     public static ReviewDTO transferToDTO(Review review) {
@@ -22,6 +24,8 @@ public class ReviewDTO {
         dto.setId(review.getId());
         dto.setProductId(review.getProduct().getId());
         dto.setUserId(review.getUser().getId());
+        dto.setName(review.getUser().getFullName());
+        dto.setImage(review.getUser().getAvatar());
         dto.setRate(review.getRate());
         dto.setMessage(review.getMessage());
         dto.setCreatedAt(review.getCreatedAt().toString());

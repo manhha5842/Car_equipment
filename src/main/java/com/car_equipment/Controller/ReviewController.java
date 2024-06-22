@@ -1,6 +1,7 @@
 package com.car_equipment.Controller;
 
 import com.car_equipment.DTO.ReviewDTO;
+import com.car_equipment.DTO.ReviewInputDTO;
 import com.car_equipment.Service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +35,14 @@ public class ReviewController {
 
     // Thêm Review
     @PostMapping
-    public ResponseEntity<ReviewDTO> addReview(@RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<ReviewDTO> addReview(@RequestBody ReviewInputDTO reviewDTO) {
         ReviewDTO newReview = reviewService.addReview(reviewDTO);
         return ResponseEntity.ok(newReview);
     }
 
     // Sửa Review
     @PutMapping("/{id}")
-    public ResponseEntity<ReviewDTO> updateReview(@PathVariable String id, @RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<ReviewDTO> updateReview(@PathVariable String id, @RequestBody ReviewInputDTO reviewDTO) {
         ReviewDTO updatedReview = reviewService.updateReview(id, reviewDTO);
         if (updatedReview != null) {
             return ResponseEntity.ok(updatedReview);

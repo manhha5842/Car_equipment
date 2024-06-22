@@ -1,6 +1,7 @@
 package com.car_equipment.Service;
 
 import com.car_equipment.DTO.ReviewDTO;
+import com.car_equipment.DTO.ReviewInputDTO;
 import com.car_equipment.Model.Product;
 import com.car_equipment.Model.Review;
 import com.car_equipment.Model.User;
@@ -39,7 +40,7 @@ public class ReviewService {
     }
 
     // Thêm Review
-    public ReviewDTO addReview(ReviewDTO reviewDTO) {
+    public ReviewDTO addReview(ReviewInputDTO reviewDTO) {
         Review review = new Review();
         review.setRate(reviewDTO.getRate());
         review.setMessage(reviewDTO.getMessage());
@@ -55,7 +56,7 @@ public class ReviewService {
     }
 
     // Sửa Review
-    public ReviewDTO updateReview(String id, ReviewDTO reviewDTO) {
+    public ReviewDTO updateReview(String id, ReviewInputDTO reviewDTO) {
         Optional<Review> reviewOptional = reviewRepository.findById(id);
         if (reviewOptional.isPresent()) {
             Review review = reviewOptional.get();
