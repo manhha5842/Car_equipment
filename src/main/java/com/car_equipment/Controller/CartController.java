@@ -16,6 +16,7 @@ public class CartController {
     // Thêm sản phẩm vào giỏ hàng thông qua ID của User
     @PostMapping("/user/{userId}/products/{productId}")
     public ResponseEntity<CartDTO> addProductToCartByUserId(@PathVariable String userId, @PathVariable String productId, @RequestParam int quantity) {
+        System.out.println("o day");
         CartDTO updatedCart = cartService.addProductToCartByUserId(userId, productId, quantity);
         if (updatedCart != null) {
             return ResponseEntity.ok(updatedCart);
@@ -23,10 +24,11 @@ public class CartController {
         return ResponseEntity.notFound().build();
     }
 
-    // Thêm sản phẩm vào giỏ hàng
-    @PostMapping("/{cartId}/products/{productId}")
-    public ResponseEntity<CartDTO> addProductToCart(@PathVariable String cartId, @PathVariable String productId, @RequestParam int quantity) {
-        CartDTO updatedCart = cartService.addProductToCart(cartId, productId, quantity);
+
+    // Giảm số lượn sản phẩm giỏ hàng thông qua ID của User
+    @PostMapping("/user/{userId}/removeProducts/{productId}")
+    public ResponseEntity<CartDTO> removeQuantityProductToCart(@PathVariable String userId, @PathVariable String productId, @RequestParam int quantity) {
+        CartDTO updatedCart = cartService.removeProductQuantityFromCart(userId, productId, quantity);
         if (updatedCart != null) {
             return ResponseEntity.ok(updatedCart);
         }

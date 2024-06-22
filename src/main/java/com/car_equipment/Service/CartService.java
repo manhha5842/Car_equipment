@@ -30,7 +30,8 @@ public class CartService {
     public CartDTO addProductToCartByUserId(String userId, String productId, int quantity) {
         Optional<User> userOptional = userRepository.findById(userId);
         Optional<Product> productOptional = productRepository.findById(productId);
-
+        System.out.println("user" +userOptional.isPresent());
+        System.out.println("product" +productOptional.isPresent());
         if (userOptional.isPresent() && productOptional.isPresent()) {
             User user = userOptional.get();
             Cart cart = cartRepository.findByUser(user).orElseGet(() -> {
@@ -58,6 +59,45 @@ public class CartService {
                     });
 
             cartProduct.setQuantity(cartProduct.getQuantity() + quantity);
+            Cart updatedCart = cartRepository.save(cart);
+            return CartDTO.transferToDTO(updatedCart);
+        }
+        return null;
+    }
+
+    // Giảm số lượng sản phẩm trong giỏ hàng
+    public CartDTO removeProductQuantityFromCart(String userId, String productId,int quantity) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<Product> productOptional = productRepository.findById(productId);
+
+        if (userOptional.isPresent() && productOptional.isPresent()) {
+            User user = userOptional.get();
+            Cart cart = cartRepository.findByUser(user).orElseGet(() -> {
+                Cart newCart = new Cart();
+                newCart.setUser(user);
+                return newCart;
+            });
+
+            Product product = productOptional.get();
+            CartProductId cartProductId = new CartProductId();
+            cartProductId.setCartId(cart.getId());
+            cartProductId.setProductId(product.getId());
+
+            CartProduct cartProduct = cart.getCartProducts().stream()
+                    .filter(cp -> cp.getId().equals(cartProductId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (cartProduct == null) {
+                return null; // Sản phẩm không có trong giỏ hàng
+            }
+
+            if (cartProduct.getQuantity() - quantity >= 1) {
+                cartProduct.setQuantity(cartProduct.getQuantity() - quantity);
+            } else {
+                cart.getCartProducts().remove(cartProduct); // Xóa sản phẩm nếu số lượng bằng 1
+            }
+
             Cart updatedCart = cartRepository.save(cart);
             return CartDTO.transferToDTO(updatedCart);
         }
