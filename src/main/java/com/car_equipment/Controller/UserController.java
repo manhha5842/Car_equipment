@@ -14,12 +14,16 @@ import io.imagekit.sdk.exceptions.*;
 import io.imagekit.sdk.models.FileCreateRequest;
 import io.imagekit.sdk.models.results.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,7 +42,8 @@ public class UserController {
     private AddressService addressService;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-
+    @Value("${FreeimageHostApiKey}")
+    private String freeimageHostApiKey;
     public UserController() {
     }
 
@@ -74,23 +79,30 @@ public class UserController {
             user.setFullName(fullName);
             user.setPhoneNumber(phoneNumber);
 
-            if( image != null ){
-                // Xử lý ảnh với ImageKit
-                ImageKit imageKit = ImageKit.getInstance();
-                Configuration config = new Configuration("public_YiJMjxdBcy00loCsmDp848aKnBM=", "private_y16gn+wwe5b3peEkVWUqy44bfT8=", "https://ik.imagekit.io/manhha5842/newsAPI");
-                imageKit.setConfig(config);
-                byte[] bytes = image.getBytes();
-                if(bytes.length>0){
-                    System.currentTimeMillis();
-                    FileCreateRequest fileCreateRequestRequest = new FileCreateRequest(bytes,
-                            id.replace(" ", "_") + Timestamp.from(Instant.now())
-                                    + ".jpg");
-                    fileCreateRequestRequest.setUseUniqueFileName(false);
-                    Result result = ImageKit.getInstance().upload(fileCreateRequestRequest);
-                    String imagePath = result.getResponseMetaData().getMap().get("url").toString();
-                    user.setAvatar(imagePath);
-                }
+//            if( image != null ){
+//                // Xử lý ảnh với ImageKit
+//                ImageKit imageKit = ImageKit.getInstance();
+//                Configuration config = new Configuration("public_YiJMjxdBcy00loCsmDp848aKnBM=", "private_y16gn+wwe5b3peEkVWUqy44bfT8=", "https://ik.imagekit.io/manhha5842/newsAPI");
+//                imageKit.setConfig(config);
+//                byte[] bytes = image.getBytes();
+//                if(bytes.length>0){
+//                    System.currentTimeMillis();
+//                    FileCreateRequest fileCreateRequestRequest = new FileCreateRequest(bytes,
+//                            id.replace(" ", "_") + Timestamp.from(Instant.now())
+//                                    + ".jpg");
+//                    fileCreateRequestRequest.setUseUniqueFileName(false);
+//                    Result result = ImageKit.getInstance().upload(fileCreateRequestRequest);
+//                    String imagePath = result.getResponseMetaData().getMap().get("url").toString();
+//                    user.setAvatar(imagePath);
+//                }
+//
+//            }
 
+
+            // Lưu tệp ảnh nếu có
+            if (image != null && !image.isEmpty()) {
+                String imagePath = uploadImageToFreeimageHost(image);
+                user.setAvatar( imagePath);
             }
             return ResponseEntity.ok().body(getRespone(userService.saveUser(user)));
         }catch (IllegalStateException e) {
@@ -120,8 +132,9 @@ public class UserController {
     @PostMapping("/loginWithGoogle")
     public ResponseEntity<?> loginWithGoogle(@RequestBody UserLoginWithGoogleDTO loginDTO) {
         // Kiểm tra user có tồn tại trong hệ thống không dựa vào email
-        Optional<User> user = userService.findByEmail(loginDTO.getEmail());
+        Optional<User> user = userService.findById(loginDTO.getId());
         if (user.isPresent()) {
+            if (!loginDTO.getEmail().isEmpty()) user.get().setEmail(loginDTO.getEmail());
             if (!loginDTO.getAvatar().isEmpty()) user.get().setAvatar(loginDTO.getAvatar());
             if (!loginDTO.getFullName().isEmpty()) user.get().setFullName(loginDTO.getFullName());
             if (!loginDTO.getPhoneNumber().isEmpty()) user.get().setPhoneNumber(loginDTO.getPhoneNumber());
@@ -129,10 +142,10 @@ public class UserController {
         } else {
             User newUser = new User();
             newUser.setId(loginDTO.getId());
-            newUser.setFullName(loginDTO.getFullName());
-            newUser.setEmail(loginDTO.getEmail());
-            newUser.setPhoneNumber(loginDTO.getPhoneNumber());
-            newUser.setAvatar(loginDTO.getAvatar());
+            if (!loginDTO.getEmail().isEmpty()) newUser.setEmail(loginDTO.getEmail());
+            if (!loginDTO.getAvatar().isEmpty()) newUser.setAvatar(loginDTO.getAvatar());
+            if (!loginDTO.getFullName().isEmpty()) newUser.setFullName(loginDTO.getFullName());
+            if (!loginDTO.getPhoneNumber().isEmpty()) newUser.setPhoneNumber(loginDTO.getPhoneNumber());
             newUser.setRole("USER");
             return ResponseEntity.ok().body(getRespone(userService.saveUser(newUser)));
         }
@@ -193,5 +206,41 @@ public class UserController {
         response.put("user", userInfoDTO);
         response.put("token", token);
         return response;
+    }
+
+    private String uploadImageToFreeimageHost(MultipartFile image) throws IOException {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("key", freeimageHostApiKey);
+        body.add("action", "upload");
+        body.add("source", new ByteArrayResource(image.getBytes()) {
+            @Override
+            public String getFilename() {
+                return image.getOriginalFilename();
+            }
+        });
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<Map> response = restTemplate.exchange(
+                "https://freeimage.host/api/1/upload",
+                HttpMethod.POST,
+                requestEntity,
+                Map.class
+        );
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            Map<String, Object> responseBody = response.getBody();
+            if (responseBody != null && responseBody.containsKey("image")) {
+                Map<String, Object> imageInfo = (Map<String, Object>) responseBody.get("image");
+                return (String) imageInfo.get("url");
+            }
+        }
+
+        throw new IOException("Failed to upload image to Freeimage.host");
     }
 }
