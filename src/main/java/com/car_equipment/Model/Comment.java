@@ -1,17 +1,18 @@
 package com.car_equipment.Model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
-@Table(name = "reply")
+@Table(name = "comment")
 @Data
-public class Reply  implements Serializable {
+public class Comment implements Serializable {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -22,14 +23,19 @@ public class Reply  implements Serializable {
     private String id;
 
     @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "comment_id", referencedColumnName = "id")
-    private Comment comment;
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    private Product product;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
     @Column(name = "message")
     private String message;
+
+    @OneToMany(mappedBy = "comment")
+    @JsonManagedReference
+    private List<Reply> replies;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+
 }

@@ -3,9 +3,9 @@ package com.car_equipment.DTO;
 import lombok.Data;
 
 @Data
-public class ReplyDTO {
+public class CommentDTO {
     private String id;
-    private String commentId;
+    private String productId;
     private String userId;
     private String message;
 

@@ -1,6 +1,7 @@
 package com.car_equipment.Controller;
 
 import com.car_equipment.DTO.ReplyDTO;
+import com.car_equipment.DTO.ReplyResponseDTO;
 import com.car_equipment.Service.ReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +18,15 @@ public class ReplyController {
 
     // Lấy danh sách Reply
     @GetMapping
-    public ResponseEntity<List<ReplyDTO>> getAllReplies() {
-        List<ReplyDTO> replies = replyService.getAllReplies();
+    public ResponseEntity<?> getAllReplies() {
+        List<ReplyResponseDTO> replies = replyService.getAllReplies();
         return ResponseEntity.ok(replies);
     }
 
     // Xem chi tiết Reply
     @GetMapping("/{id}")
-    public ResponseEntity<ReplyDTO> getReplyById(@PathVariable String id) {
-        ReplyDTO reply = replyService.getReplyById(id);
+    public ResponseEntity<?> getReplyById(@PathVariable String id) {
+        ReplyResponseDTO reply = replyService.getReplyById(id);
         if (reply != null) {
             return ResponseEntity.ok(reply);
         }
@@ -34,15 +35,15 @@ public class ReplyController {
 
     // Thêm Reply
     @PostMapping
-    public ResponseEntity<ReplyDTO> addReply(@RequestBody ReplyDTO replyDTO) {
-        ReplyDTO newReply = replyService.addReply(replyDTO);
+    public ResponseEntity<?> addReply(@RequestBody ReplyDTO replyDTO) {
+        ReplyResponseDTO newReply = replyService.addReply(replyDTO);
         return ResponseEntity.ok(newReply);
     }
 
     // Sửa Reply
     @PutMapping("/{id}")
-    public ResponseEntity<ReplyDTO> updateReply(@PathVariable String id, @RequestBody ReplyDTO replyDTO) {
-        ReplyDTO updatedReply = replyService.updateReply(id, replyDTO);
+    public ResponseEntity<?> updateReply(@RequestBody ReplyDTO replyDTO) {
+        ReplyResponseDTO updatedReply = replyService.updateReply(replyDTO);
         if (updatedReply != null) {
             return ResponseEntity.ok(updatedReply);
         }

@@ -16,7 +16,6 @@ public class ReviewDTO {
     private int rate;
     private String message;
     private String createdAt;
-    private List<ReplyDTO> replies;
 
     public static ReviewDTO transferToDTO(Review review) {
         ReviewDTO dto = new ReviewDTO();
@@ -26,7 +25,6 @@ public class ReviewDTO {
         dto.setRate(review.getRate());
         dto.setMessage(review.getMessage());
         dto.setCreatedAt(review.getCreatedAt().toString());
-        dto.setReplies(review.getReplies().stream().map(ReplyDTO::transferToDTO).collect(Collectors.toList()));
         return dto;
     }
 }
