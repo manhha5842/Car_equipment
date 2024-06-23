@@ -4,6 +4,7 @@ import com.car_equipment.DTO.AddressDTO;
 import com.car_equipment.Service.UserService;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
@@ -47,6 +48,7 @@ public class Address implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @EqualsAndHashCode.Exclude
     private User user;
 
     @Column(name = "status")

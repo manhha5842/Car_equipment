@@ -2,6 +2,7 @@ package com.car_equipment.Model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
@@ -23,14 +24,16 @@ public class Order implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @EqualsAndHashCode.Exclude
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "address_id", referencedColumnName = "id")
+    @EqualsAndHashCode.Exclude
     private Address address;
 
     @Column(name = "order_datetime")
-    private Timestamp orderDateTime;
+    private Timestamp orderDateTime = new Timestamp(System.currentTimeMillis());
 
     @Column(name = "delivery_fee")
     private int deliveryFee;
@@ -63,5 +66,6 @@ public class Order implements Serializable {
     }
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     private Set<OrderProduct> orderProducts;
 }

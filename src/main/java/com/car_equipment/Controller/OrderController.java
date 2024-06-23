@@ -1,6 +1,7 @@
 package com.car_equipment.Controller;
 
 import com.car_equipment.DTO.OrderDTO;
+import com.car_equipment.DTO.OrderInputDTO;
 import com.car_equipment.Model.EnumOrderStatus;
 import com.car_equipment.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,8 +77,9 @@ public class OrderController {
 
     // Thêm Order
     @PostMapping
-    public ResponseEntity<OrderDTO> addOrder(@RequestBody OrderDTO orderDTO) {
-        OrderDTO newOrder = orderService.addOrder(orderDTO);
+    public ResponseEntity<OrderDTO> addOrder(@RequestBody OrderInputDTO orderInputDTO) {
+        System.out.println(orderInputDTO);
+        OrderDTO newOrder = orderService.addOrder(orderInputDTO);
         return ResponseEntity.ok(newOrder);
     }
 

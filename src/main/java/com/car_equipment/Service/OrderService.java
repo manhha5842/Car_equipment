@@ -2,20 +2,23 @@ package com.car_equipment.Service;
 
 import com.car_equipment.DTO.AddressDTO;
 import com.car_equipment.DTO.OrderDTO;
-import com.car_equipment.Model.Address;
-import com.car_equipment.Model.EnumOrderStatus;
-import com.car_equipment.Model.Order;
-import com.car_equipment.Model.User;
+import com.car_equipment.DTO.OrderInputDTO;
+import com.car_equipment.DTO.ProductCartInputDTO;
+import com.car_equipment.Model.*;
 import com.car_equipment.Repository.AddressRepository;
 import com.car_equipment.Repository.OrderRepository;
+import com.car_equipment.Repository.ProductRepository;
 import com.car_equipment.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +32,8 @@ public class OrderService {
     private AddressRepository addressRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ProductRepository productRepository;
 
     // Lấy tất cả các order
     public List<OrderDTO> getAllOrders() {
@@ -73,26 +78,37 @@ public class OrderService {
     }
 
     // Thêm Order
-    public OrderDTO addOrder(OrderDTO orderDTO) {
+    public OrderDTO addOrder(OrderInputDTO orderInputDTO) {
         Order order = new Order();
-        order.setOrderDateTime(orderDTO.getOrderDateTime());
-        order.setDeliveryFee(orderDTO.getDeliveryFee());
-        order.setTotalAmount(orderDTO.getTotalAmount());
-        order.setPaid(orderDTO.isPaid());
-        order.setStatus(EnumOrderStatus.valueOf(orderDTO.getStatus()));
-        order.setReview(orderDTO.getReview());
-        order.setNote(orderDTO.getNote());
+        order.setOrderDateTime(new Timestamp(System.currentTimeMillis()));
+        order.setDeliveryFee(orderInputDTO.getDeliveryFee());
+        order.setTotalAmount(orderInputDTO.getTotalAmount());
+        order.setPaid(orderInputDTO.isPaid());
+        order.setStatus(EnumOrderStatus.PENDING);
+        order.setNote(orderInputDTO.getNote());
 
-        Optional<User> userOptional = userRepository.findById(orderDTO.getUserId());
+        Optional<User> userOptional = userRepository.findById(orderInputDTO.getUserId());
         userOptional.ifPresent(order::setUser);
+        Optional<Address> addressOptional = addressRepository.findById(orderInputDTO.getAddressId());
+        addressOptional.ifPresent(order::setAddress);
 
-        Address address = transferToEntity(orderDTO.getAddress());
-        addressRepository.save(address);
-        order.setAddress(address);
 
-        Order savedOrder = orderRepository.save(order);
-        return OrderDTO.transferToDTO(savedOrder);
+        order = orderRepository.save(order);
+        Set<OrderProduct> products = new HashSet<>();
+        for (ProductCartInputDTO productCartDTO : orderInputDTO.getProducts()) {
+            OrderProduct orderProduct = new OrderProduct();
+            Optional<Product> optionalProduct = productRepository.findById(productCartDTO.getProductId());
+            optionalProduct.ifPresent(orderProduct::setProduct);
+            orderProduct.setQuantity(productCartDTO.getQuantity());
+            orderProduct.setOrder(order);
+            orderProduct.setId(new OrderProductId(order.getId(), productCartDTO.getProductId()));
+            products.add(orderProduct);
+        }
+
+        order.setOrderProducts(products);
+        return OrderDTO.transferToDTO(orderRepository.save(order));
     }
+
     public Address transferToEntity(AddressDTO dto) {
         Address address = new Address();
         address.setId(dto.getId());
@@ -108,6 +124,7 @@ public class OrderService {
         userOptional.ifPresent(address::setUser);
         return address;
     }
+
     // Sửa Order
     public OrderDTO updateOrder(String id, OrderDTO orderDTO) {
         Optional<Order> orderOptional = orderRepository.findById(id);

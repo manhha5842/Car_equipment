@@ -2,6 +2,7 @@ package com.car_equipment.Model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
@@ -15,6 +16,7 @@ public class OrderProduct implements Serializable {
     @ManyToOne
     @MapsId("orderId")
     @JoinColumn(name = "order_id")
+    @EqualsAndHashCode.Exclude
     private Order order;
 
     @ManyToOne
