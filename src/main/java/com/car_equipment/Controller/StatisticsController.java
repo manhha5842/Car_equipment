@@ -65,6 +65,29 @@ public class StatisticsController {
         return ResponseEntity.ok(statistics);
     }
 
+    @GetMapping("/revenue-auto")
+    public ResponseEntity<?> getRevenueStatisticsAuto(
+            @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startTime,
+            @RequestParam("endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endTime) {
+
+        LocalDateTime startDateTime = startTime.atStartOfDay();
+        LocalDateTime endDateTime = endTime.atTime(23, 59, 59);
+        Timestamp startTimestamp = Timestamp.valueOf(startDateTime);
+        Timestamp endTimestamp = Timestamp.valueOf(endDateTime);
+        if (endTime.minusDays(8).isAfter(startTime)) {
+            List<RevenueStatisticsDTO> statistics = statisticsService.getRevenueStatisticsWeek(startTimestamp, endTimestamp);
+            return ResponseEntity.ok(statistics);
+        } else if (endTime.minusDays(32).isAfter(startTime)) {
+            List<RevenueStatisticsDTO> statistics = statisticsService.getRevenueStatisticsMonth(startTimestamp, endTimestamp);
+            return ResponseEntity.ok(statistics);
+
+        }else{
+            List<RevenueStatisticsDTO> statistics = statisticsService.getRevenueStatistics(startTimestamp, endTimestamp);
+            return ResponseEntity.ok(statistics);
+        }
+
+    }
+
     @GetMapping("/category-revenue")
     public ResponseEntity<List<CategoryRevenueStatisticsDTO>> getCategoryRevenueStatistics(
             @RequestParam("month") int month,
