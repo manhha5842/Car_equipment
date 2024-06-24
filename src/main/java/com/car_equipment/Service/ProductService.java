@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,9 +26,10 @@ public class ProductService {
         List<Product> products = productRepository.findAll();
         return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
     }    // Lấy danh sách Product
+
     public List<ProductDTO> findTop10NewestProducts() {
-        List<Product> products = productRepository.findTop10NewestProducts();
-        return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
+        List<Product> publicgetTop10NewestProducts = productRepository.findTop10NewestProducts(PageRequest.of(0, 10)).getContent();
+        return publicgetTop10NewestProducts.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
     }
 
     // Lấy danh sách Product theo trang
