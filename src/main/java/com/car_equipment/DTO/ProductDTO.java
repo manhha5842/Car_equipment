@@ -33,7 +33,7 @@ public class ProductDTO {
         dto.setDate(product.getDate());
         dto.setQuantityInit(product.getQuantityInit());
         dto.setQuantityAvailable(product.getQuantityAvailable());
-        dto.setNumberOfSale(product.getOrderProducts().size());
+        dto.setNumberOfSale(product.getOrderProducts()==null  ? 0 : product.getOrderProducts().size());
         dto.setViewCount(product.getViewCount());
         dto.setCategories(product.getCategories().stream().map(CategoryDTO::transferToDTO).collect(Collectors.toSet()));
         return dto;
