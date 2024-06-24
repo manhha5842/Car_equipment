@@ -105,8 +105,8 @@ public class OrderController {
 
     // Cập nhật trạng thái Order
     @PatchMapping("/{id}/status")
-    public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable String id, @RequestParam EnumOrderStatus status) {
-        OrderDTO updatedOrder = orderService.updateOrderStatus(id, status);
+    public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable String id, @RequestParam String status) {
+        OrderDTO updatedOrder = orderService.updateOrderStatus(id, EnumOrderStatus.valueOf(status));
         if (updatedOrder != null) {
             return ResponseEntity.ok(updatedOrder);
         }
