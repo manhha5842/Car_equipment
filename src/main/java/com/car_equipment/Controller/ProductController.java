@@ -40,8 +40,8 @@ public class ProductController {
 
     // Lấy danh sách sản phẩm bán chạy theo trang
     @GetMapping("/best-selling/page")
-    public ResponseEntity<Page<ProductDTO>> getBestSellingProductsByPage(@RequestParam int page, @RequestParam int size) {
-        Page<ProductDTO> productPage = productService.getBestSellingProductsByPage(page, size);
+    public ResponseEntity<Page<ProductBestSellingDTO>> getBestSellingProductsByPage(@RequestParam int page, @RequestParam int size) {
+        Page<ProductBestSellingDTO> productPage = productService.getBestSellingProductsByPage(page, size);
         return ResponseEntity.ok(productPage);
     }
 

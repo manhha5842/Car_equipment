@@ -55,10 +55,10 @@ public class ProductService {
     }
 
     // Lấy danh sách sản phẩm bán chạy theo trang
-    public Page<ProductDTO> getBestSellingProductsByPage(int page, int size) {
+    public Page<ProductBestSellingDTO> getBestSellingProductsByPage(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = productRepository.findBestSellingProducts(pageable);
-        return productPage.map(ProductDTO::transferToDTO);
+        return productPage.map(ProductBestSellingDTO::transferToDTO);
     }
 
     // Lấy danh sách sản phẩm được xem nhiều nhất
