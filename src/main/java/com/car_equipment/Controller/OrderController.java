@@ -78,7 +78,6 @@ public class OrderController {
     // Thêm Order
     @PostMapping
     public ResponseEntity<OrderDTO> addOrder(@RequestBody OrderInputDTO orderInputDTO) {
-        System.out.println(orderInputDTO);
         OrderDTO newOrder = orderService.addOrder(orderInputDTO);
         return ResponseEntity.ok(newOrder);
     }

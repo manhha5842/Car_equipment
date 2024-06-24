@@ -5,10 +5,7 @@ import com.car_equipment.DTO.OrderDTO;
 import com.car_equipment.DTO.OrderInputDTO;
 import com.car_equipment.DTO.ProductCartInputDTO;
 import com.car_equipment.Model.*;
-import com.car_equipment.Repository.AddressRepository;
-import com.car_equipment.Repository.OrderRepository;
-import com.car_equipment.Repository.ProductRepository;
-import com.car_equipment.Repository.UserRepository;
+import com.car_equipment.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +31,10 @@ public class OrderService {
     private UserService userService;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private CartRepository cartRepository;
+    @Autowired
+    private CartService cartService;
 
     // Lấy tất cả các order
     public List<OrderDTO> getAllOrders() {
@@ -106,7 +107,17 @@ public class OrderService {
         }
 
         order.setOrderProducts(products);
-        return OrderDTO.transferToDTO(orderRepository.save(order));
+
+        Optional<Cart> optionalCart = cartRepository.findByUser(order.getUser());
+        if (optionalCart.isPresent()) {
+            Cart cart = optionalCart.get();
+            Set<CartProduct> cartProducts = cart.getCartProducts();
+            for (CartProduct cartProduct : cartProducts) {
+                cartService.removeProductFromCart(cart.getId(),cartProduct.getProduct().getId());
+            }
+        }
+
+            return OrderDTO.transferToDTO(orderRepository.save(order));
     }
 
     public Address transferToEntity(AddressDTO dto) {
