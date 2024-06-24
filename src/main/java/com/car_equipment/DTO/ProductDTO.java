@@ -18,6 +18,7 @@ public class ProductDTO {
     private Date date;
     private int quantityInit;
     private int quantityAvailable;
+    private int numberOfSale;
     private int viewCount;
     private Set<CategoryDTO> categories;
 
@@ -32,6 +33,7 @@ public class ProductDTO {
         dto.setDate(product.getDate());
         dto.setQuantityInit(product.getQuantityInit());
         dto.setQuantityAvailable(product.getQuantityAvailable());
+        dto.setNumberOfSale(product.getOrderProducts().size());
         dto.setViewCount(product.getViewCount());
         dto.setCategories(product.getCategories().stream().map(CategoryDTO::transferToDTO).collect(Collectors.toSet()));
         return dto;
