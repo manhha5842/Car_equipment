@@ -32,4 +32,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("SELECT p FROM Product p ORDER BY p.viewCount DESC")
     Page<Product> findMostViewedProducts(Pageable pageable);
+    // Thêm hàm lấy top 10 sản phẩm mới nhất
+    @Query("SELECT p FROM Product p ORDER BY p.date DESC")
+    List<Product> findTop10NewestProducts();
 }

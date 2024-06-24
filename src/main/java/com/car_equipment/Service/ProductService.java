@@ -26,6 +26,10 @@ public class ProductService {
     public List<ProductDTO> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
+    }    // Lấy danh sách Product
+    public List<ProductDTO> findTop10NewestProducts() {
+        List<Product> products = productRepository.findTop10NewestProducts();
+        return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
     }
 
     // Lấy danh sách Product theo trang

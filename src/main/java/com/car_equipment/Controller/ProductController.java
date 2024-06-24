@@ -22,6 +22,12 @@ public class ProductController {
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         List<ProductDTO> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
+
+    } // Lấy danh sách Product mới
+    @GetMapping("/new")
+    public ResponseEntity<List<ProductDTO>> getProductsNew() {
+        List<ProductDTO> products = productService.findTop10NewestProducts();
+        return ResponseEntity.ok(products);
     }
 
     // Lấy danh sách Product theo trang
