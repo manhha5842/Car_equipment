@@ -6,9 +6,13 @@ import com.car_equipment.Service.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,13 +25,43 @@ public class StatisticsController {
 
     @GetMapping("/revenue")
     public ResponseEntity<List<RevenueStatisticsDTO>> getRevenueStatistics(
-            @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @RequestParam("endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+            @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startTime,
+            @RequestParam("endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endTime) {
 
-        Timestamp startTimestamp = Timestamp.valueOf(startTime);
-        Timestamp endTimestamp = Timestamp.valueOf(endTime);
+        LocalDateTime startDateTime = startTime.atStartOfDay();
+        LocalDateTime endDateTime = endTime.atTime(23, 59, 59);
+        Timestamp startTimestamp = Timestamp.valueOf(startDateTime);
+        Timestamp endTimestamp = Timestamp.valueOf(endDateTime);
 
         List<RevenueStatisticsDTO> statistics = statisticsService.getRevenueStatistics(startTimestamp, endTimestamp);
+        return ResponseEntity.ok(statistics);
+    }
+
+    @GetMapping("/revenue-week")
+    public ResponseEntity<List<RevenueStatisticsDTO>> getRevenueStatisticsWeek(
+            @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startTime,
+            @RequestParam("endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endTime) {
+
+        LocalDateTime startDateTime = startTime.atStartOfDay();
+        LocalDateTime endDateTime = endTime.atTime(23, 59, 59);
+        Timestamp startTimestamp = Timestamp.valueOf(startDateTime);
+        Timestamp endTimestamp = Timestamp.valueOf(endDateTime);
+
+        List<RevenueStatisticsDTO> statistics = statisticsService.getRevenueStatisticsWeek(startTimestamp, endTimestamp);
+        return ResponseEntity.ok(statistics);
+    }
+
+    @GetMapping("/revenue-month")
+    public ResponseEntity<List<RevenueStatisticsDTO>> getRevenueStatisticsMonth(
+            @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startTime,
+            @RequestParam("endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endTime) {
+
+        LocalDateTime startDateTime = startTime.atStartOfDay();
+        LocalDateTime endDateTime = endTime.atTime(23, 59, 59);
+        Timestamp startTimestamp = Timestamp.valueOf(startDateTime);
+        Timestamp endTimestamp = Timestamp.valueOf(endDateTime);
+
+        List<RevenueStatisticsDTO> statistics = statisticsService.getRevenueStatisticsMonth(startTimestamp, endTimestamp);
         return ResponseEntity.ok(statistics);
     }
 

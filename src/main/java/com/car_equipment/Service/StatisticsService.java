@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,8 +36,40 @@ public class StatisticsService {
                 })
                 .collect(Collectors.toList());
     }
+    public List<RevenueStatisticsDTO> getRevenueStatisticsWeek(Timestamp startTime, Timestamp endTime) {
+        List<Order> orders = orderRepository.findAllByOrderDateTimeBetween(startTime, endTime);
+        return orders.stream()
+                .collect(Collectors.groupingBy(order -> {
+                    LocalDate orderDate = order.getOrderDateTime().toLocalDateTime().toLocalDate();
+                    LocalDate startOfWeek = orderDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                    return startOfWeek;
+                }))
+                .entrySet().stream()
+                .map(entry -> {
+                    RevenueStatisticsDTO dto = new RevenueStatisticsDTO();
+                    dto.setPeriod("Week of " + entry.getKey().toString());
+                    dto.setRevenue(entry.getValue().stream().mapToInt(Order::getTotalAmount).sum());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
-
+    public List<RevenueStatisticsDTO> getRevenueStatisticsMonth(Timestamp startTime, Timestamp endTime) {
+        List<Order> orders = orderRepository.findAllByOrderDateTimeBetween(startTime, endTime);
+        return orders.stream()
+                .collect(Collectors.groupingBy(order -> {
+                    YearMonth yearMonth = YearMonth.from(order.getOrderDateTime().toLocalDateTime());
+                    return yearMonth;
+                }))
+                .entrySet().stream()
+                .map(entry -> {
+                    RevenueStatisticsDTO dto = new RevenueStatisticsDTO();
+                    dto.setPeriod(entry.getKey().toString());
+                    dto.setRevenue(entry.getValue().stream().mapToInt(Order::getTotalAmount).sum());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
     public List<CategoryRevenueStatisticsDTO> getCategoryRevenueStatistics(int month, int year) {
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime startTime = yearMonth.atDay(1).atStartOfDay();
