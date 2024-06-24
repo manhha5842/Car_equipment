@@ -52,8 +52,9 @@ public class OrderController {
 
     // Lấy order theo status
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<OrderDTO>> getOrdersByStatus(@PathVariable EnumOrderStatus status) {
-        List<OrderDTO> orders = orderService.getOrdersByStatus(status);
+    public ResponseEntity<List<OrderDTO>> getOrdersByStatus(@PathVariable String status) {
+        System.out.println(status);
+        List<OrderDTO> orders = orderService.getOrdersByStatus(EnumOrderStatus.valueOf(status));
         return ResponseEntity.ok(orders);
     }
 
