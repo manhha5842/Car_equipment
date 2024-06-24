@@ -173,7 +173,7 @@ public class UserController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestParam("month") String email) {
+    public ResponseEntity<?> resetPassword(@RequestBody String email) {
 
         // Kiểm tra mật khẩu hiện tại
         User user = userService.findByEmail(email).orElse(null);
