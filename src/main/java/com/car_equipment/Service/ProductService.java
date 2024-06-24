@@ -1,6 +1,7 @@
 package com.car_equipment.Service;
 
 import com.car_equipment.DTO.CategoryDTO;
+import com.car_equipment.DTO.ProductBestSellingDTO;
 import com.car_equipment.DTO.ProductDTO;
 import com.car_equipment.Model.Product;
 import com.car_equipment.Repository.ProductRepository;
@@ -48,9 +49,9 @@ public class ProductService {
     }
 
     // Lấy danh sách sản phẩm bán chạy
-    public List<ProductDTO> getBestSellingProducts() {
+    public List<ProductBestSellingDTO> getBestSellingProducts() {
         List<Product> products = productRepository.findBestSellingProducts();
-        return products.stream().map(ProductDTO::transferToDTO).collect(Collectors.toList());
+        return products.stream().map(ProductBestSellingDTO::transferToDTO).collect(Collectors.toList());
     }
 
     // Lấy danh sách sản phẩm bán chạy theo trang

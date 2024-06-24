@@ -1,5 +1,6 @@
 package com.car_equipment.Controller;
 
+import com.car_equipment.DTO.ProductBestSellingDTO;
 import com.car_equipment.DTO.ProductDTO;
 import com.car_equipment.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,8 @@ public class ProductController {
 
     // Lấy danh sách sản phẩm bán chạy
     @GetMapping("/best-selling")
-    public ResponseEntity<List<ProductDTO>> getBestSellingProducts() {
-        List<ProductDTO> products = productService.getBestSellingProducts();
+    public ResponseEntity<?> getBestSellingProducts() {
+        List<ProductBestSellingDTO> products = productService.getBestSellingProducts();
         return ResponseEntity.ok(products);
     }
 
