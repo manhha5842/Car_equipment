@@ -6,13 +6,7 @@ import com.car_equipment.DTO.*;
 import com.car_equipment.Model.User;
 import com.car_equipment.Service.AddressService;
 import com.car_equipment.Service.UserService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.imagekit.sdk.ImageKit;
-import io.imagekit.sdk.config.Configuration;
 import io.imagekit.sdk.exceptions.*;
-import io.imagekit.sdk.models.FileCreateRequest;
-import io.imagekit.sdk.models.results.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -27,8 +21,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +36,7 @@ public class UserController {
     private JwtTokenProvider jwtTokenProvider;
     @Value("${FreeimageHostApiKey}")
     private String freeimageHostApiKey;
+
     public UserController() {
     }
 
@@ -102,10 +95,10 @@ public class UserController {
             // Lưu tệp ảnh nếu có
             if (image != null && !image.isEmpty()) {
                 String imagePath = uploadImageToFreeimageHost(image);
-                user.setAvatar( imagePath);
+                user.setAvatar(imagePath);
             }
             return ResponseEntity.ok().body(getRespone(userService.saveUser(user)));
-        }catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             System.out.println(e);
             return ResponseEntity.badRequest().body(e);
         }
@@ -180,8 +173,29 @@ public class UserController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword() {
-        return null;
+    public ResponseEntity<?> resetPassword(@RequestParam("month") String email) {
+
+        // Kiểm tra mật khẩu hiện tại
+        User user = userService.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        String ALPHABET = "abcdefghijklmnopqrstuvwxyz1234567890";
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder(10);
+        for (int i = 0; i < 10; i++) {
+            stringBuilder.append(ALPHABET.charAt(random.nextInt(ALPHABET.length())));
+        }
+        String password = stringBuilder.toString();
+
+        String newPassword = passwordEncoder.encode(password);
+        user.setPassword(newPassword);
+        userService.saveUser(user);
+        Map<String, Object> response = new HashMap<>();
+        response.put("password", password);
+        return ResponseEntity.ok().body(response);
     }
 
     private Map<String, Object> getRespone(User user) {
