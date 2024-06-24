@@ -72,25 +72,6 @@ public class UserController {
             user.setFullName(fullName);
             user.setPhoneNumber(phoneNumber);
 
-//            if( image != null ){
-//                // Xử lý ảnh với ImageKit
-//                ImageKit imageKit = ImageKit.getInstance();
-//                Configuration config = new Configuration("public_YiJMjxdBcy00loCsmDp848aKnBM=", "private_y16gn+wwe5b3peEkVWUqy44bfT8=", "https://ik.imagekit.io/manhha5842/newsAPI");
-//                imageKit.setConfig(config);
-//                byte[] bytes = image.getBytes();
-//                if(bytes.length>0){
-//                    System.currentTimeMillis();
-//                    FileCreateRequest fileCreateRequestRequest = new FileCreateRequest(bytes,
-//                            id.replace(" ", "_") + Timestamp.from(Instant.now())
-//                                    + ".jpg");
-//                    fileCreateRequestRequest.setUseUniqueFileName(false);
-//                    Result result = ImageKit.getInstance().upload(fileCreateRequestRequest);
-//                    String imagePath = result.getResponseMetaData().getMap().get("url").toString();
-//                    user.setAvatar(imagePath);
-//                }
-//
-//            }
-
 
             // Lưu tệp ảnh nếu có
             if (image != null && !image.isEmpty()) {
@@ -173,9 +154,8 @@ public class UserController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestBody String email) {
-
-        // Kiểm tra mật khẩu hiện tại
+    public ResponseEntity<?> resetPassword(@RequestParam("email") String email) {
+        System.out.println(email);
         User user = userService.findByEmail(email).orElse(null);
 
         if (user == null) {
