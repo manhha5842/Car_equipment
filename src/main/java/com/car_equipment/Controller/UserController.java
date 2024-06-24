@@ -62,17 +62,12 @@ public class UserController {
             @RequestParam("fullName") String fullName,
             @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam(value = "image", required = false) MultipartFile image) throws IOException, ForbiddenException, TooManyRequestsException, InternalServerException, UnauthorizedException, BadRequestException, UnknownException {
-
         try {
-
-
             User user = userService.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
             user.setEmail(email);
             user.setFullName(fullName);
             user.setPhoneNumber(phoneNumber);
-
-
             // Lưu tệp ảnh nếu có
             if (image != null && !image.isEmpty()) {
                 String imagePath = uploadImageToFreeimageHost(image);

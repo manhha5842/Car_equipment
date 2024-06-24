@@ -29,10 +29,10 @@ public class CategoryService {
     }
 
     // Thêm Category
-    public CategoryDTO addCategory(CategoryDTO categoryDTO) {
+    public CategoryDTO addCategory(String name, String image) {
         Category category = new Category();
-        category.setName(categoryDTO.getName());
-        category.setImageCategory(categoryDTO.getImageCategory());
+        category.setName(name);
+        category.setImageCategory(image);
         Category savedCategory = categoryRepository.save(category);
         return CategoryDTO.transferToDTO(savedCategory);
     }
