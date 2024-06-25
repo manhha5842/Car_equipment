@@ -34,7 +34,7 @@ public class OrderDTO {
         dto.setDeliveryFee(order.getDeliveryFee());
         dto.setTotalAmount(order.getTotalAmount());
         dto.setPaid(order.isPaid());
-        dto.setStatus(order.getStatus().toString());
+        dto.setStatus(order.getStatus().name());
         dto.setReview(order.getReview());
         dto.setNote(order.getNote());
         dto.setCreatedAt(order.getCreatedAt());
