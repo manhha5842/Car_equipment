@@ -24,3 +24,12 @@ The Car Equipment Management System is a web application developed using Java an
    ```sh
    git clone https://github.com/manhha5842/Car_equipment.git
    cd Car_equipment
+2. **Setup the database:** 
+   Create a MySQL database named car_equipment.
+   Update the src/main/resources/application.properties file with your database credentials.
+3. **Build and run the application:**
+   ```sh 
+   ./mvnw clean install
+   ./mvnw spring-boot:run
+4. **API Documentation**
+   For detailed API documentation and usage guidelines, please refer to the [API Documentation](https://docs.google.com/spreadsheets/d/1gTSstHwIH0K2MQ9FwXErxlP6RXu6OHRxwyhRjp2DETA/edit?usp=sharing)..
