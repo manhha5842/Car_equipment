@@ -32,4 +32,4 @@ The Car Equipment Management System is a web application developed using Java an
    ./mvnw clean install
    ./mvnw spring-boot:run
 4. **API Documentation**
-   For detailed API documentation and usage guidelines, please refer to the [API Documentation](https://docs.google.com/spreadsheets/d/1gTSstHwIH0K2MQ9FwXErxlP6RXu6OHRxwyhRjp2DETA/edit?usp=sharing)..
+   For detailed API documentation and usage guidelines, please refer to the [API Documentation](https://docs.google.com/spreadsheets/d/1aQKL4wMuVozTfqMyNabApS88lOVAqGPjPc3wnzL4FW0/edit?usp=sharing).
